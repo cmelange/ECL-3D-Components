@@ -1,0 +1,35 @@
+{
+  "name": "ecl-3d-web",
+  "version": "1.0.0",
+  "description": "Javascript library to facilitate the build and visualisation of 3D models",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm run clean && npm run browserify",
+    "clean": "rm -rf build && mkdir build",
+    "browserify": "browserify browser.js -o build/ecl_3d.js",
+    "uglify": "uglifyjs build/ecl_3d.js -o build/ecl_3d.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cmelange/ECL-3D-Components.git"
+  },
+  "keywords": [
+    "3D",
+    "javascript",
+    "model"
+  ],
+  "author": "Cedric Mélange",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cmelange/ECL-3D-Components/issues"
+  },
+  "homepage": "https://github.com/cmelange/ECL-3D-Components#readme",
+  "dependencies": {
+    "@jscad/csg": "^0.7.0",
+    "@types/node": "^12.7.4",
+    "browserify": "^16.5.0",
+    "three": "^0.108.0",
+    "uglify-js": "^3.6.0"
+  }
+}
