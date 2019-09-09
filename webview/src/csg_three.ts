@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-export function Csg2TreeGeometry(csg)
+export function Csg2TreeGeometry(csg): THREE.BufferGeometry
 {
     let geometry = new THREE.BufferGeometry();
     let triangles = csg.toTriangles();

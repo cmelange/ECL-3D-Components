@@ -1,16 +1,16 @@
 import * as csg from '@jscad/csg'
 
-function toRadians_(angle: number)
+function toRadians_(angle: number): number
 {
     return angle/180*Math.PI;
 }
 
-function toDegrees_(radian: number)
+function toDegrees_(radian: number): number
 {
     return radian/Math.PI*180;
 }
 
-function RotationMatrix_(rotation: number[])
+function RotationMatrix_(rotation: number[]): number[][]
 {
     let theta = [toDegrees_(rotation[0]), toDegrees_(rotation[0]), toDegrees_(rotation[0])];
 
@@ -35,7 +35,7 @@ export class Vector2D {
         this.vector = [x,y];
     }
 
-    Translate(vector: Vector2D, mult: number=1) {
+    Translate(vector: Vector2D, mult: number=1): Vector2D {
         for (let i=0; i<2; i++)
         {
             this.vector[i] += vector[i]*mult;
@@ -43,7 +43,7 @@ export class Vector2D {
         return this;
     }
 
-    Multiply(mult: number) {
+    Multiply(mult: number): Vector2D {
         for (let i=0; i<2; i++)
         {
             this.vector[i] *= mult;
@@ -51,7 +51,7 @@ export class Vector2D {
         return this;
     }
 
-    Rotate(rotation: number) {
+    Rotate(rotation: number): Vector2D {
         let radians = toRadians_(rotation);
         let rotatedVector =
             [this.vector[0]*Math.cos(radians) - this.vector[1]*Math.sin(radians),
@@ -60,25 +60,30 @@ export class Vector2D {
         return this;
     }
 
-    Copy() {
+    Copy(): Vector2D {
         return new Vector2D(this.vector[0], this.vector[1]);
     }
 
-    Length() {
+    Length(): number {
         return Math.sqrt( Math.pow(this.vector[0], 2) + Math.pow(this.vector[1], 2) );
     }
 
-    DistanceTo(vector: Vector2D) {
+    DistanceTo(vector: Vector2D): number {
         return new Vector2D(vector[0] - this.vector[0], vector[1] - this.vector[1]).Length();
     }
 
-    Angle() {
+    /**
+     * Calculate the angle between the vector and the x-axis
+     * 
+     * @returns {number}    angle between the vector and the x-axis in degrees
+     */
+    Angle(): number {
         return toDegrees_(Math.atan2(this.vector[1], this.vector[2]));
     }
 
 }
 
-function TangentPointToCircle(point, center, radius, direction=true) {
+function TangentPointToCircle(point, center, radius, direction=true): Vector2D {
     var dir = (direction) ? 1 : -1;
     var tangent_angle = dir * Math.asin(radius/point.DistanceTo(center));
     return point.Copy().Add(center.Copy().Add(point,-1).Rotate(tangent_angle).Multiply(Math.cos(tangent_angle)));
@@ -96,21 +101,21 @@ export class Curve2D {
         };
     }
 
-    Translate(vector: Vector2D) {
+    Translate(vector: Vector2D): Curve2D {
         for (var i=0; i<this.path.length; ++i) {
             this.path[i].Translate(vector);
         };
         return this;
     }
 
-    Rotate(rotation: number) {
+    Rotate(rotation: number): Curve2D {
         for (var i=0; i<this.path.length; ++i) {
             this.path[i].Rotate(rotation);
         };
         return this;
     }
 
-    Copy() {
+    Copy():Curve2D {
         var copyArray = [];
         for (var i=0; i<this.path.length; ++i) {
             copyArray.push(this.path[i].Copy());
@@ -118,7 +123,7 @@ export class Curve2D {
         return new Curve2D(copyArray);
     }
 
-    Length() {
+    Length(): number {
         var length = 0;
         for (var i=0; i<this.path.length-1; ++i) {
             length = length + this.path[i].DistanceTo(this.path[i+1]);
@@ -126,7 +131,7 @@ export class Curve2D {
         return length;
     }
 
-    AppendArray(vectorArray: Vector2D[]) {
+    AppendArray(vectorArray: Vector2D[]): Curve2D {
         for (var i=0; i<vectorArray.length; ++i) {
             if ((i===0) && (this.path.length > 0)) {
                 if (this.path[this.path.length-1].Copy().Translate(vectorArray[0], -1).Length() < 1) {
@@ -135,14 +140,15 @@ export class Curve2D {
             };
             this.path.push(vectorArray[i].Copy());
         }
+        return this;
     }
 
-    Append(curve: Curve2D) {
+    Append(curve: Curve2D): Curve2D {
         this.AppendArray(curve.path);
         return this;
     }
 
-    Repeat(num: number) {
+    Repeat(num: number): Curve2D {
         var singleCurve = this.Copy();
         var translationVector = singleCurve.path[singleCurve.path.length-1].Copy();
         for (var i=1; i<num; ++i) {
@@ -151,18 +157,18 @@ export class Curve2D {
         return this;
     }
 
-    Curve3D(rotation: number[] =[0,0,0]) {
+/*     Curve3D(rotation: number[] =[0,0,0]): Curve3D {
         return new Curve3D(this.path.map(function(vector) { 
                                             return new Vector3D(vector.vector[0], vector.vector[1], 0)
                                                                .Rotate(rotation);
                                             }));
-    }
+    } */
 
-    Shape() {
+    Shape(): Shape {
         return new Shape([this]);
     }
 
-    Thicken(distance: number) {
+    Thicken(distance: number): Shape {
         var vectorArray = [];
         for(var i=this.path.length-1; i>=0; --i) {
             var tangentIndex = (i === 0) ? 1 : i;
@@ -174,7 +180,10 @@ export class Curve2D {
     }
 }
     
-function CircleLine(center: Vector2D, radius: number, angle: number[], numPoints: number=10) {
+function CircleLine(center: Vector2D,
+                    radius: number,
+                    angle: number[],
+                    numPoints: number=10): Curve2D {
     var angleDistance = (angle[1]-angle[0])/(numPoints-1);
     var circlePath = [];
     for (var i=0; i<numPoints; ++i) {
@@ -185,7 +194,10 @@ function CircleLine(center: Vector2D, radius: number, angle: number[], numPoints
     return new Curve2D(circlePath);
 };
 
-function Parabola(points: Vector2D[], extremum: number, numPoints: number=10, iterations:number=15) {
+function Parabola(points: Vector2D[],
+                  extremum: number,
+                  numPoints: number=10,
+                  iterations:number=15): Curve2D {
     var x1 = points[0].vector[0];
     var y1 = points[0].vector[1] - extremum;
     var x2 = points[1].vector[0];
@@ -232,7 +244,7 @@ export class Vector3D {
         return this;
     }
 
-    Multiply(mult: number) {
+    Multiply(mult: number): Vector3D {
         for (let i=0; i<3; i++)
         {
             this.vector[i] *= mult;
@@ -240,7 +252,7 @@ export class Vector3D {
         return this;
     }
 
-    ApplyMatrix_(matrix: number[][]) {
+    ApplyMatrix_(matrix: number[][]): void {
         let new_vector = [0,0,0];
         for (let i=0; i<3; i++)
         {
@@ -252,30 +264,30 @@ export class Vector3D {
         this.vector = new_vector;
     }
 
-    Rotate(rotation: number[]) {
+    Rotate(rotation: number[]): Vector3D {
         let rotation_matrix = RotationMatrix_(rotation);
         this.ApplyMatrix_(rotation_matrix);
         return this;
     }
 
-    Copy() {
+    Copy(): Vector3D {
         return new Vector3D(this.vector[0], this.vector[1], this.vector[2]);
     }
 
-    Length() {
+    Length(): number {
         return Math.sqrt( Math.pow(this.vector[0], 2) + Math.pow(this.vector[1], 2) + 
                           Math.pow(this.vector[3], 2));
     }
 
-    DistanceTo(vector: Vector3D) {
+    DistanceTo(vector: Vector3D): number {
             return new Vector3D(vector[0] - this.vector[0],
                                 vector[1] - this.vector[1],
                                 vector[2] - this.vector[2]).Length();
     }
 
-    //OrthogonalPlane(offset) {
-    //    return new Plane().SetFromNormalAndCoplanarPoint(this, offset);
-    //}
+    OrthogonalPlane(offset: Vector3D): Plane {
+        return new Plane(this, offset);
+    }
 
 }
 
@@ -291,14 +303,14 @@ export class Curve3D {
         };
     }
 
-    Translate(vector: Vector3D) {
+    Translate(vector: Vector3D): Curve3D {
         for (var i=0; i<this.path.length; ++i) {
             this.path[i].Translate(vector);
         };
         return this;
     }
 
-    Rotate(rotation: number[]) {
+    Rotate(rotation: number[]): Curve3D {
         let rotation_matrix = RotationMatrix_(rotation);
         for (var i=0; i<this.path.length; ++i) {
             this.path[i].ApplyMatrix_(rotation_matrix);
@@ -306,7 +318,7 @@ export class Curve3D {
         return this;
     }
 
-    Copy() {
+    Copy(): Curve3D {
         var copyArray = [];
         for (var i=0; i<this.path.length; ++i) {
             copyArray.push(this.path[i].Copy());
@@ -314,7 +326,7 @@ export class Curve3D {
         return new Curve3D(copyArray);
     }
 
-    Length() {
+    Length(): number {
         var length = 0;
         for (var i=0; i<this.path.length-1; ++i) {
             length = length + this.path[i].DistanceTo(this.path[i+1]);
@@ -322,17 +334,18 @@ export class Curve3D {
         return length;
     }
 
-    AppendArray(vectorArray: Vector3D[]) {
+    AppendArray(vectorArray: Vector3D[]): Curve3D {
         for (var i=0; i<vectorArray.length; ++i) {
             this.path.push(vectorArray[i].Copy());
         }
+        return this;
     }
 
-    TangentAtStart() {
+    TangentAtStart(): Vector3D {
         return this.path[1].Copy().Translate(this.path[0], -1);
     }
 
-    TangentAtEnd() {
+    TangentAtEnd(): Vector3D {
         return this.path[this.path.length-1].Copy().Translate(this.path[this.path.length-2], -1);
     }
 
@@ -350,30 +363,112 @@ export class Shape {
         }
     }
     
-    Translate(vector: Vector2D) {
+    Translate(vector: Vector2D): Shape {
         for (var i=0; i<this.paths.length; ++i) {
             this.paths[i].Translate(vector);
         };
+        return this;
     }
 
-    Rotate(rotation: number) {
+    Rotate(rotation: number): Shape {
         for (var i=0; i<this.paths.length; ++i) {
             this.paths[i].Rotate(rotation);
         };
+        return this;
     }
 
-    Copy() {
+    Copy(): Shape {
         return new Shape(this.paths);
     }
 
-    // Extrude(curve: Curve3D, steps=10, tension=0.75) {
-    //     var extrudeCurve = new THREE.CatmullRomCurve3(curve.path.map(function(vector) { return vector.vector;}));
-    //     extrudeCurve.tension = tension;
-    //     var extrudeSettings = { steps: steps,
-    //                             bevelEnabled: false,
-    //                             extrudePath: extrudeCurve};
-    //     return new Geometry(new THREE.ExtrudeGeometry(this.ThreeShape(), extrudeSettings));
-    // }
+    ToCsgCag_() {
+        let points: number[][][] = [];
+        for (let i=0; i < this.paths.length; ++i)
+        {
+            points.push(this.paths[i].path.map(x => x.vector));
+        }
+        return csg.fromPoints(points);
+    }
+
+    /**
+     * Linearly extrudes the shape along de z-axis
+     * 
+     * @param {number} height extrusion height
+     * @returns {Geometry}
+     */
+    Extrude(height: number): Geometry {
+        return new Geometry(this.ToCsgCag_().extrude({offset: [0,0,height], twiststeps: 1, twistangle: 0}));
+    }
+
+    /**
+     * Revolves the shape around the y-axis
+     * 
+     * @param {number} angle angle of rotation in degrees
+     * @param {number} resolution number of polygons per 360 degree revolution
+     * @returns {Geometry}
+     */
+    Revolve(angle: number, resolution: number =12): Geometry {
+        return new Geometry(this.ToCsgCag_().rotateExtrude({angle: angle, resolution: resolution}));
+    }
 
 }
 
+//---- Plane -------------------------------------------------------------
+export class Plane {
+
+    plane;
+
+    constructor(normal: Vector3D, point: Vector3D) {
+        this.plane = csg.Plane.SetFromNormalAndCoplanarPoint(normal.vector, point.vector);
+    }
+
+    Translate(vector: Vector3D): Plane {
+        this.plane.transform(csg.Matrix4x4.translation(vector.vector));
+        return this;
+    }
+
+    Copy(): Plane {
+        var copyPlane = new Plane(new Vector3D(0,0,1), new Vector3D(0,0,0));
+        copyPlane.plane = new csg.Plane(this.plane.normal, this.plane.w);
+        return copyPlane;
+    }
+
+}
+
+//---- Geometry -----------------------------------------------------------------
+export class Geometry {
+
+    geometry;
+
+    constructor(geometry) {
+        this.geometry = geometry;
+    }
+
+    Translate(vector: Vector3D): Geometry {
+        this.geometry = csg.translate(vector.vector, this.geometry);
+        return this;
+    }
+
+    Rotate(rotation: number[]): Geometry {
+        this.geometry = csg.rotate(rotation);
+        return this;
+    }
+
+    Copy() {
+        return new Geometry(csg.clone(this.geometry));
+    }
+
+    SlicePlane(plane): Geometry {
+        this.geometry = this.geometry.cutByPlane(plane);
+        return this;
+    }
+
+    // Merge(geometry) {
+    //     this.geometry.merge(geometry.geometry);
+    //     return this;
+    // }
+
+    // Mesh(material) {
+    //     return new Mesh(new THREE.Mesh(this.geometry, material));
+    // }
+}

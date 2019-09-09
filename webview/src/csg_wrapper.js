@@ -1,5 +1,6 @@
 "use strict";
 exports.__esModule = true;
+var csg = require("@jscad/csg");
 function toRadians_(angle) {
     return angle / 180 * Math.PI;
 }
@@ -316,6 +317,24 @@ var Shape = /** @class */ (function () {
     Shape.prototype.Copy = function () {
         return new Shape(this.paths);
     };
+    Shape.prototype.ToCsgCag_ = function () {
+        var points = [];
+        for (var i = 0; i < this.paths.length; ++i) {
+            points.push(this.paths[i].path.map(function (x) { return x.vector; }));
+        }
+        return csg.fromPoints(points);
+    };
+    Shape.prototype.Extrude = function (height) {
+        return new Geometry(this.ToCsgCag_().extrude({ offset: height, twiststeps: 2, twistangle: 0 }));
+    };
     return Shape;
 }());
 exports.Shape = Shape;
+//---- Geometry -----------------------------------------------------------------
+var Geometry = /** @class */ (function () {
+    function Geometry(geometry) {
+        this.geometry = geometry;
+    }
+    return Geometry;
+}());
+exports.Geometry = Geometry;
