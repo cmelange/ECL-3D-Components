@@ -1,9 +1,9 @@
 "use strict";
 exports.__esModule = true;
 var THREE = require("three");
-function Csg2TreeGeometry(csg) {
-    var geometry = new THREE.BufferGeometry();
-    var triangles = csg.toTriangles();
+function Csg2TreeGeometry(geometry) {
+    var three_geometry = new THREE.BufferGeometry();
+    var triangles = geometry.geometry.toTriangles();
     var positions = [];
     var normals = [];
     for (var i = 0; i < triangles.length; ++i) {
@@ -29,8 +29,8 @@ function Csg2TreeGeometry(csg) {
     function disposeArray() {
         this.array = null;
     }
-    geometry.addAttribute('position', new THREE.Float32BufferAttribute(positions, 3).onUpload(disposeArray));
-    geometry.addAttribute('normal', new THREE.Float32BufferAttribute(normals, 3).onUpload(disposeArray));
-    return geometry;
+    three_geometry.addAttribute('position', new THREE.Float32BufferAttribute(positions, 3).onUpload(disposeArray));
+    three_geometry.addAttribute('normal', new THREE.Float32BufferAttribute(normals, 3).onUpload(disposeArray));
+    return three_geometry;
 }
 exports.Csg2TreeGeometry = Csg2TreeGeometry;

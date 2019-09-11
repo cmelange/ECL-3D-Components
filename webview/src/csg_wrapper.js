@@ -53,6 +53,11 @@ var Vector2D = /** @class */ (function () {
     Vector2D.prototype.DistanceTo = function (vector) {
         return new Vector2D(vector[0] - this.vector[0], vector[1] - this.vector[1]).Length();
     };
+    /**
+     * Calculate the angle between the vector and the x-axis
+     *
+     * @returns {number}    angle between the vector and the x-axis in degrees
+     */
     Vector2D.prototype.Angle = function () {
         return toDegrees_(Math.atan2(this.vector[1], this.vector[2]));
     };
@@ -115,6 +120,7 @@ var Curve2D = /** @class */ (function () {
             ;
             this.path.push(vectorArray[i].Copy());
         }
+        return this;
     };
     Curve2D.prototype.Append = function (curve) {
         this.AppendArray(curve.path);
@@ -129,13 +135,12 @@ var Curve2D = /** @class */ (function () {
         ;
         return this;
     };
-    Curve2D.prototype.Curve3D = function (rotation) {
-        if (rotation === void 0) { rotation = [0, 0, 0]; }
-        return new Curve3D(this.path.map(function (vector) {
-            return new Vector3D(vector.vector[0], vector.vector[1], 0)
-                .Rotate(rotation);
-        }));
-    };
+    /*     Curve3D(rotation: number[] =[0,0,0]): Curve3D {
+            return new Curve3D(this.path.map(function(vector) {
+                                                return new Vector3D(vector.vector[0], vector.vector[1], 0)
+                                                                   .Rotate(rotation);
+                                                }));
+        } */
     Curve2D.prototype.Shape = function () {
         return new Shape([this]);
     };
@@ -238,6 +243,9 @@ var Vector3D = /** @class */ (function () {
     Vector3D.prototype.DistanceTo = function (vector) {
         return new Vector3D(vector[0] - this.vector[0], vector[1] - this.vector[1], vector[2] - this.vector[2]).Length();
     };
+    Vector3D.prototype.OrthogonalPlane = function (offset) {
+        return new Plane(this, offset);
+    };
     return Vector3D;
 }());
 exports.Vector3D = Vector3D;
@@ -285,6 +293,7 @@ var Curve3D = /** @class */ (function () {
         for (var i = 0; i < vectorArray.length; ++i) {
             this.path.push(vectorArray[i].Copy());
         }
+        return this;
     };
     Curve3D.prototype.TangentAtStart = function () {
         return this.path[1].Copy().Translate(this.path[0], -1);
@@ -298,6 +307,7 @@ exports.Curve3D = Curve3D;
 //---- Shape --------------------------------------------------------------------
 var Shape = /** @class */ (function () {
     function Shape(paths) {
+        this.paths = [];
         for (var i = 0; i < paths.length; ++i) {
             this.paths.push(paths[i].Copy());
         }
@@ -307,12 +317,14 @@ var Shape = /** @class */ (function () {
             this.paths[i].Translate(vector);
         }
         ;
+        return this;
     };
     Shape.prototype.Rotate = function (rotation) {
         for (var i = 0; i < this.paths.length; ++i) {
             this.paths[i].Rotate(rotation);
         }
         ;
+        return this;
     };
     Shape.prototype.Copy = function () {
         return new Shape(this.paths);
@@ -322,19 +334,90 @@ var Shape = /** @class */ (function () {
         for (var i = 0; i < this.paths.length; ++i) {
             points.push(this.paths[i].path.map(function (x) { return x.vector; }));
         }
-        return csg.fromPoints(points);
+        return csg.CAG.fromPoints(points);
     };
+    /**
+     * Linearly extrudes the shape along de z-axis
+     *
+     * @param {number} height extrusion height
+     * @returns {Geometry}
+     */
     Shape.prototype.Extrude = function (height) {
-        return new Geometry(this.ToCsgCag_().extrude({ offset: height, twiststeps: 2, twistangle: 0 }));
+        return new Geometry(this.ToCsgCag_().extrude({ offset: [0, 0, height], twiststeps: 1, twistangle: 0 }));
+    };
+    /**
+     * Revolves the shape around the y-axis
+     *
+     * @param {number} angle angle of rotation in degrees
+     * @param {number} resolution number of polygons per 360 degree revolution
+     * @returns {Geometry}
+     */
+    Shape.prototype.Revolve = function (angle, resolution) {
+        if (resolution === void 0) { resolution = 12; }
+        return new Geometry(this.ToCsgCag_().rotateExtrude({ angle: angle, resolution: resolution }));
     };
     return Shape;
 }());
 exports.Shape = Shape;
+//---- Plane -------------------------------------------------------------
+var Plane = /** @class */ (function () {
+    function Plane(normal, point) {
+        this.plane = csg.CSG.Plane.fromNormalAndPoint(normal.vector, point.vector);
+    }
+    Plane.prototype.Translate = function (vector) {
+        this.plane = this.plane.transform(csg.Matrix4x4.translation(vector.vector));
+        return this;
+    };
+    Plane.prototype.Flip = function () {
+        this.plane = this.plane.flipped();
+        return this;
+    };
+    Plane.prototype.Copy = function () {
+        var copyPlane = new Plane(new Vector3D(0, 0, 1), new Vector3D(0, 0, 0));
+        copyPlane.plane = new csg.CSG.Plane(this.plane.normal, this.plane.w);
+        return copyPlane;
+    };
+    return Plane;
+}());
+exports.Plane = Plane;
 //---- Geometry -----------------------------------------------------------------
 var Geometry = /** @class */ (function () {
     function Geometry(geometry) {
         this.geometry = geometry;
     }
+    Geometry.prototype.Translate = function (vector) {
+        this.geometry = csg.translate(vector.vector, this.geometry);
+        return this;
+    };
+    Geometry.prototype.Rotate = function (rotation) {
+        this.geometry = csg.rotate(rotation, this.geometry);
+        return this;
+    };
+    Geometry.prototype.Copy = function () {
+        return new Geometry(csg.clone(this.geometry));
+    };
+    /**
+     * Clip the geometry by a plane. Retuns the solid on the back side of the plane
+     *
+     * @param {Plane} plane plane to cut the geometry
+     * @returns {Geometry}
+     */
+    Geometry.prototype.ClipByPlane = function (plane) {
+        this.geometry = this.geometry.cutByPlane(plane.plane);
+        return this;
+    };
+    Geometry.prototype.Union = function (geometry) {
+        this.geometry = this.geometry.union(geometry.geometry);
+        return this;
+    };
+    Geometry.prototype.Difference = function (geometry) {
+        this.geometry = this.geometry.subtract(geometry.geometry);
+        return this;
+    };
+    Geometry.prototype.Intersection = function (geometry) {
+        this.geometry = this.geometry.intersect(geometry.geometry);
+        return this;
+    };
     return Geometry;
 }());
 exports.Geometry = Geometry;

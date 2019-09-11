@@ -83,7 +83,7 @@ export class Vector2D {
 
 }
 
-function TangentPointToCircle(point, center, radius, direction=true): Vector2D {
+export function TangentPointToCircle(point, center, radius, direction=true): Vector2D {
     var dir = (direction) ? 1 : -1;
     var tangent_angle = dir * Math.asin(radius/point.DistanceTo(center));
     return point.Copy().Add(center.Copy().Add(point,-1).Rotate(tangent_angle).Multiply(Math.cos(tangent_angle)));
@@ -157,13 +157,6 @@ export class Curve2D {
         return this;
     }
 
-/*     Curve3D(rotation: number[] =[0,0,0]): Curve3D {
-        return new Curve3D(this.path.map(function(vector) { 
-                                            return new Vector3D(vector.vector[0], vector.vector[1], 0)
-                                                               .Rotate(rotation);
-                                            }));
-    } */
-
     Shape(): Shape {
         return new Shape([this]);
     }
@@ -180,7 +173,7 @@ export class Curve2D {
     }
 }
     
-function CircleLine(center: Vector2D,
+export function CircleLine(center: Vector2D,
                     radius: number,
                     angle: number[],
                     numPoints: number=10): Curve2D {
@@ -194,7 +187,7 @@ function CircleLine(center: Vector2D,
     return new Curve2D(circlePath);
 };
 
-function Parabola(points: Vector2D[],
+export function Parabola(points: Vector2D[],
                   extremum: number,
                   numPoints: number=10,
                   iterations:number=15): Curve2D {
@@ -357,6 +350,7 @@ export class Shape {
     paths: Curve2D[];
 
     constructor(paths: Curve2D[]) {
+        this.paths = [];
         for (let i=0; i < paths.length; ++i)
         {
             this.paths.push(paths[i].Copy())
@@ -387,7 +381,7 @@ export class Shape {
         {
             points.push(this.paths[i].path.map(x => x.vector));
         }
-        return csg.fromPoints(points);
+        return csg.CAG.fromPoints(points);
     }
 
     /**
@@ -419,17 +413,22 @@ export class Plane {
     plane;
 
     constructor(normal: Vector3D, point: Vector3D) {
-        this.plane = csg.Plane.SetFromNormalAndCoplanarPoint(normal.vector, point.vector);
+        this.plane = csg.CSG.Plane.fromNormalAndPoint(normal.vector, point.vector);
     }
 
     Translate(vector: Vector3D): Plane {
-        this.plane.transform(csg.Matrix4x4.translation(vector.vector));
+        this.plane = this.plane.transform(csg.Matrix4x4.translation(vector.vector));
+        return this;
+    }
+
+    Flip(): Plane {
+        this.plane = this.plane.flipped();
         return this;
     }
 
     Copy(): Plane {
         var copyPlane = new Plane(new Vector3D(0,0,1), new Vector3D(0,0,0));
-        copyPlane.plane = new csg.Plane(this.plane.normal, this.plane.w);
+        copyPlane.plane = new csg.CSG.Plane(this.plane.normal, this.plane.w);
         return copyPlane;
     }
 
@@ -450,7 +449,7 @@ export class Geometry {
     }
 
     Rotate(rotation: number[]): Geometry {
-        this.geometry = csg.rotate(rotation);
+        this.geometry = csg.rotate(rotation, this.geometry);
         return this;
     }
 
@@ -458,17 +457,30 @@ export class Geometry {
         return new Geometry(csg.clone(this.geometry));
     }
 
-    SlicePlane(plane): Geometry {
-        this.geometry = this.geometry.cutByPlane(plane);
+    /**
+     * Clip the geometry by a plane. Retuns the solid on the back side of the plane
+     * 
+     * @param {Plane} plane plane to cut the geometry
+     * @returns {Geometry}
+     */
+    ClipByPlane(plane: Plane): Geometry {
+        this.geometry = this.geometry.cutByPlane(plane.plane);
         return this;
     }
 
-    // Merge(geometry) {
-    //     this.geometry.merge(geometry.geometry);
-    //     return this;
-    // }
+    Union(geometry: Geometry): Geometry {
+        this.geometry = this.geometry.union(geometry.geometry);
+        return this;
+    }
 
-    // Mesh(material) {
-    //     return new Mesh(new THREE.Mesh(this.geometry, material));
-    // }
+    Difference(geometry: Geometry): Geometry {
+        this.geometry = this.geometry.subtract(geometry.geometry);
+        return this;
+    }
+
+    Intersection(geometry: Geometry): Geometry {
+        this.geometry = this.geometry.intersect(geometry.geometry);
+        return this;
+    }
+
 }

@@ -1,9 +1,10 @@
 import * as THREE from 'three';
+import { Geometry } from './csg_wrapper';
 
-export function Csg2TreeGeometry(csg): THREE.BufferGeometry
+export function Csg2TreeGeometry(geometry: Geometry): THREE.BufferGeometry
 {
-    let geometry = new THREE.BufferGeometry();
-    let triangles = csg.toTriangles();
+    let three_geometry = new THREE.BufferGeometry();
+    let triangles = geometry.geometry.toTriangles();
     let positions = [];
     let normals = [];
     for (let i=0; i<triangles.length; ++i)
@@ -35,8 +36,8 @@ export function Csg2TreeGeometry(csg): THREE.BufferGeometry
         this.array = null;
     }
 
-    geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ).onUpload( disposeArray ) );
-    geometry.addAttribute( 'normal', new THREE.Float32BufferAttribute( normals, 3 ).onUpload( disposeArray ) );
+    three_geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ).onUpload( disposeArray ) );
+    three_geometry.addAttribute( 'normal', new THREE.Float32BufferAttribute( normals, 3 ).onUpload( disposeArray ) );
     
-    return geometry;
+    return three_geometry;
 }
