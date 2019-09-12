@@ -9,10 +9,10 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 exports.__esModule = true;
-__export(require("./src/csg_wrapper"));
+__export(require("./src/3d_model_representation"));
 __export(require("./src/csg_three"));
 
-},{"./src/csg_three":54,"./src/csg_wrapper":55}],3:[function(require,module,exports){
+},{"./src/3d_model_representation":54,"./src/csg_three":64}],3:[function(require,module,exports){
 /*
 ## License
 
@@ -57331,115 +57331,104 @@ module.exports = toArray
 },{}],54:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
-var THREE = require("three");
-function Csg2TreeGeometry(geometry) {
-    var three_geometry = new THREE.BufferGeometry();
-    var triangles = geometry.geometry.toTriangles();
-    var positions = [];
-    var normals = [];
-    for (var i = 0; i < triangles.length; ++i) {
-        var ax = triangles[i].vertices[0].pos.x;
-        var ay = triangles[i].vertices[0].pos.y;
-        var az = triangles[i].vertices[0].pos.z;
-        positions.push(ax, ay, az);
-        var bx = triangles[i].vertices[1].pos.x;
-        var by = triangles[i].vertices[1].pos.y;
-        var bz = triangles[i].vertices[1].pos.z;
-        positions.push(bx, by, bz);
-        var cx = triangles[i].vertices[2].pos.x;
-        var cy = triangles[i].vertices[2].pos.y;
-        var cz = triangles[i].vertices[2].pos.z;
-        positions.push(cx, cy, cz);
-        var nx = triangles[i].plane.normal.x;
-        var ny = triangles[i].plane.normal.y;
-        var nz = triangles[i].plane.normal.z;
-        normals.push(nx, ny, nz);
-        normals.push(nx, ny, nz);
-        normals.push(nx, ny, nz);
-    }
-    function disposeArray() {
-        this.array = null;
-    }
-    three_geometry.addAttribute('position', new THREE.Float32BufferAttribute(positions, 3).onUpload(disposeArray));
-    three_geometry.addAttribute('normal', new THREE.Float32BufferAttribute(normals, 3).onUpload(disposeArray));
-    return three_geometry;
-}
-exports.Csg2TreeGeometry = Csg2TreeGeometry;
+var vector2d_1 = require("./3d_model_representation/vector2d");
+exports.Vector2D = vector2d_1.Vector2D;
+var curve2d_1 = require("./3d_model_representation/curve2d");
+exports.Curve2D = curve2d_1.Curve2D;
+var shape_1 = require("./3d_model_representation/shape");
+exports.Shape = shape_1.Shape;
+var _2d_functions_1 = require("./3d_model_representation/2d_functions");
+exports.TangentPointToCircle = _2d_functions_1.TangentPointToCircle;
+exports.CircleLine = _2d_functions_1.CircleLine;
+exports.Circle = _2d_functions_1.Circle;
+exports.Rectangle = _2d_functions_1.Rectangle;
+exports.Parabola = _2d_functions_1.Parabola;
+var vector3d_1 = require("./3d_model_representation/vector3d");
+exports.Vector3D = vector3d_1.Vector3D;
+var curve3d_1 = require("./3d_model_representation/curve3d");
+exports.Curve3D = curve3d_1.Curve3D;
+var plane_1 = require("./3d_model_representation/plane");
+exports.Plane = plane_1.Plane;
+var geometry_1 = require("./3d_model_representation/geometry");
+exports.Geometry = geometry_1.Geometry;
 
-},{"three":53}],55:[function(require,module,exports){
+},{"./3d_model_representation/2d_functions":55,"./3d_model_representation/curve2d":56,"./3d_model_representation/curve3d":57,"./3d_model_representation/geometry":58,"./3d_model_representation/plane":60,"./3d_model_representation/shape":61,"./3d_model_representation/vector2d":62,"./3d_model_representation/vector3d":63}],55:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
-var csg = require("@jscad/csg");
-function toRadians_(angle) {
-    return angle / 180 * Math.PI;
-}
-function toDegrees_(radian) {
-    return radian / Math.PI * 180;
-}
-function RotationMatrix_(rotation) {
-    var theta = [toDegrees_(rotation[0]), toDegrees_(rotation[0]), toDegrees_(rotation[0])];
-    var cosa = Math.cos(theta[0]);
-    var sina = Math.sin(theta[0]);
-    var cosb = Math.cos(theta[1]);
-    var sinb = Math.sin(theta[1]);
-    var cosc = Math.cos(theta[2]);
-    var sinc = Math.sin(theta[2]);
-    return [[cosb * cosc, -cosb * sinc, sinb],
-        [sina * sinb * cosc + cosa * sinc, -sina * sinb * sinc + cosa * cosc, -sina * cosb],
-        [-cosa * sinb * cosc + sina * sinc, cosa * sinb * sinc + sina * cosc, cosa * cosb]];
-}
-//---- Vector2D -----------------------------------------------------------------
-var Vector2D = /** @class */ (function () {
-    function Vector2D(x, y) {
-        this.vector = [x, y];
-    }
-    Vector2D.prototype.Translate = function (vector, mult) {
-        if (mult === void 0) { mult = 1; }
-        for (var i = 0; i < 2; i++) {
-            this.vector[i] += vector[i] * mult;
-        }
-        return this;
-    };
-    Vector2D.prototype.Multiply = function (mult) {
-        for (var i = 0; i < 2; i++) {
-            this.vector[i] *= mult;
-        }
-        return this;
-    };
-    Vector2D.prototype.Rotate = function (rotation) {
-        var radians = toRadians_(rotation);
-        var rotatedVector = [this.vector[0] * Math.cos(radians) - this.vector[1] * Math.sin(radians),
-            this.vector[0] * Math.sin(radians) + this.vector[1] * Math.cos(radians)];
-        this.vector = rotatedVector;
-        return this;
-    };
-    Vector2D.prototype.Copy = function () {
-        return new Vector2D(this.vector[0], this.vector[1]);
-    };
-    Vector2D.prototype.Length = function () {
-        return Math.sqrt(Math.pow(this.vector[0], 2) + Math.pow(this.vector[1], 2));
-    };
-    Vector2D.prototype.DistanceTo = function (vector) {
-        return new Vector2D(vector[0] - this.vector[0], vector[1] - this.vector[1]).Length();
-    };
-    /**
-     * Calculate the angle between the vector and the x-axis
-     *
-     * @returns {number}    angle between the vector and the x-axis in degrees
-     */
-    Vector2D.prototype.Angle = function () {
-        return toDegrees_(Math.atan2(this.vector[1], this.vector[2]));
-    };
-    return Vector2D;
-}());
-exports.Vector2D = Vector2D;
+var math_1 = require("./math");
+var vector2d_1 = require("./vector2d");
+var curve2d_1 = require("./curve2d");
 function TangentPointToCircle(point, center, radius, direction) {
     if (direction === void 0) { direction = true; }
     var dir = (direction) ? 1 : -1;
     var tangent_angle = dir * Math.asin(radius / point.DistanceTo(center));
     return point.Copy().Add(center.Copy().Add(point, -1).Rotate(tangent_angle).Multiply(Math.cos(tangent_angle)));
 }
-//---- Curve2D ------------------------------------------------------------------
+exports.TangentPointToCircle = TangentPointToCircle;
+function CircleLine(radius, center, angle, numPoints) {
+    if (numPoints === void 0) { numPoints = 10; }
+    var angleDistance = (angle[1] - angle[0]) / (numPoints - 1);
+    var circlePath = [];
+    for (var i = 0; i < numPoints; ++i) {
+        circlePath.push(new vector2d_1.Vector2D(radius * Math.cos(math_1.toRadians(angle[0] + i * angleDistance)), radius * Math.sin(math_1.toRadians(angle[0] + i * angleDistance)))
+            .Translate(center));
+    }
+    ;
+    return new curve2d_1.Curve2D(circlePath);
+}
+exports.CircleLine = CircleLine;
+;
+function Circle(radius, center, numPoints) {
+    if (center === void 0) { center = new vector2d_1.Vector2D(0, 0); }
+    if (numPoints === void 0) { numPoints = 10; }
+    return CircleLine(radius, center, [0, 360], numPoints).Shape();
+}
+exports.Circle = Circle;
+function Rectangle(width, height, center) {
+    if (center === void 0) { center = new vector2d_1.Vector2D(0, 0); }
+    return new curve2d_1.Curve2D([new vector2d_1.Vector2D(-width / 2, -height / 2),
+        new vector2d_1.Vector2D(-width / 2, height / 2),
+        new vector2d_1.Vector2D(width / 2, height / 2),
+        new vector2d_1.Vector2D(width / 2, -height / 2)]).Shape();
+}
+exports.Rectangle = Rectangle;
+function Parabola(points, extremum, numPoints, iterations) {
+    if (numPoints === void 0) { numPoints = 10; }
+    if (iterations === void 0) { iterations = 15; }
+    var x1 = points[0].vector[0];
+    var y1 = points[0].vector[1] - extremum;
+    var x2 = points[1].vector[0];
+    var y2 = points[1].vector[1] - extremum;
+    var xt = 0;
+    var A = 0;
+    var direction = ((x1 < x2) ? 1 : -1);
+    var xtn = direction * (x1 + x2) / 2;
+    var step = Math.abs((x1 - x2) / 2);
+    var concave = ((extremum > y1) ? 1 : -1);
+    for (var i = 0; i < iterations; ++i) {
+        xt = xtn;
+        x1 = x1 - xt;
+        x2 = x2 - xt;
+        A = y1 / Math.pow(x1, 2);
+        step = step / 2;
+        xtn = step * direction * concave * ((A * Math.pow(x2, 2) < y2) ? 1 : -1);
+    }
+    var parabolaPath = [];
+    var currentX = x1;
+    var calcStep = (x2 - x1) / (numPoints - 1);
+    var translation = new vector2d_1.Vector2D(points[0].vector[0] - x1, extremum);
+    for (var i = 0; i < numPoints; ++i) {
+        parabolaPath.push(new vector2d_1.Vector2D(currentX, A * Math.pow(currentX, 2)).Translate(translation));
+        currentX = currentX + calcStep;
+    }
+    return new curve2d_1.Curve2D(parabolaPath);
+}
+exports.Parabola = Parabola;
+
+},{"./curve2d":56,"./math":59,"./vector2d":62}],56:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var shape_1 = require("./shape");
 var Curve2D = /** @class */ (function () {
     function Curve2D(vectors) {
         this.path = [];
@@ -57504,14 +57493,8 @@ var Curve2D = /** @class */ (function () {
         ;
         return this;
     };
-    /*     Curve3D(rotation: number[] =[0,0,0]): Curve3D {
-            return new Curve3D(this.path.map(function(vector) {
-                                                return new Vector3D(vector.vector[0], vector.vector[1], 0)
-                                                                   .Rotate(rotation);
-                                                }));
-        } */
     Curve2D.prototype.Shape = function () {
-        return new Shape([this]);
+        return new shape_1.Shape([this]);
     };
     Curve2D.prototype.Thicken = function (distance) {
         var vectorArray = [];
@@ -57527,98 +57510,11 @@ var Curve2D = /** @class */ (function () {
     return Curve2D;
 }());
 exports.Curve2D = Curve2D;
-function CircleLine(center, radius, angle, numPoints) {
-    if (numPoints === void 0) { numPoints = 10; }
-    var angleDistance = (angle[1] - angle[0]) / (numPoints - 1);
-    var circlePath = [];
-    for (var i = 0; i < numPoints; ++i) {
-        circlePath.push(new Vector2D(radius * Math.cos(toRadians_(angle[0] + i * angleDistance)), radius * Math.sin(toRadians_(angle[0] + i * angleDistance)))
-            .Translate(center));
-    }
-    ;
-    return new Curve2D(circlePath);
-}
-;
-function Parabola(points, extremum, numPoints, iterations) {
-    if (numPoints === void 0) { numPoints = 10; }
-    if (iterations === void 0) { iterations = 15; }
-    var x1 = points[0].vector[0];
-    var y1 = points[0].vector[1] - extremum;
-    var x2 = points[1].vector[0];
-    var y2 = points[1].vector[1] - extremum;
-    var xt = 0;
-    var A = 0;
-    var direction = ((x1 < x2) ? 1 : -1);
-    var xtn = direction * (x1 + x2) / 2;
-    var step = Math.abs((x1 - x2) / 2);
-    var concave = ((extremum > y1) ? 1 : -1);
-    for (var i = 0; i < iterations; ++i) {
-        xt = xtn;
-        x1 = x1 - xt;
-        x2 = x2 - xt;
-        A = y1 / Math.pow(x1, 2);
-        step = step / 2;
-        xtn = step * direction * concave * ((A * Math.pow(x2, 2) < y2) ? 1 : -1);
-    }
-    var parabolaPath = [];
-    var currentX = x1;
-    var calcStep = (x2 - x1) / (numPoints - 1);
-    var translation = new Vector2D(points[0].vector[0] - x1, extremum);
-    for (var i = 0; i < numPoints; ++i) {
-        parabolaPath.push(new Vector2D(currentX, A * Math.pow(currentX, 2)).Translate(translation));
-        currentX = currentX + calcStep;
-    }
-    return new Curve2D(parabolaPath);
-}
-//---- Vector3D -----------------------------------------------------------------
-var Vector3D = /** @class */ (function () {
-    function Vector3D(x, y, z) {
-        this.vector = [x, y, z];
-    }
-    Vector3D.prototype.Translate = function (vector, mult) {
-        if (mult === void 0) { mult = 1; }
-        for (var i = 0; i < 3; i++) {
-            this.vector[i] += vector[i] * mult;
-        }
-        return this;
-    };
-    Vector3D.prototype.Multiply = function (mult) {
-        for (var i = 0; i < 3; i++) {
-            this.vector[i] *= mult;
-        }
-        return this;
-    };
-    Vector3D.prototype.ApplyMatrix_ = function (matrix) {
-        var new_vector = [0, 0, 0];
-        for (var i = 0; i < 3; i++) {
-            for (var j = 0; j < 3; j++) {
-                new_vector[i] = matrix[i][j] * this.vector[j];
-            }
-        }
-        this.vector = new_vector;
-    };
-    Vector3D.prototype.Rotate = function (rotation) {
-        var rotation_matrix = RotationMatrix_(rotation);
-        this.ApplyMatrix_(rotation_matrix);
-        return this;
-    };
-    Vector3D.prototype.Copy = function () {
-        return new Vector3D(this.vector[0], this.vector[1], this.vector[2]);
-    };
-    Vector3D.prototype.Length = function () {
-        return Math.sqrt(Math.pow(this.vector[0], 2) + Math.pow(this.vector[1], 2) +
-            Math.pow(this.vector[3], 2));
-    };
-    Vector3D.prototype.DistanceTo = function (vector) {
-        return new Vector3D(vector[0] - this.vector[0], vector[1] - this.vector[1], vector[2] - this.vector[2]).Length();
-    };
-    Vector3D.prototype.OrthogonalPlane = function (offset) {
-        return new Plane(this, offset);
-    };
-    return Vector3D;
-}());
-exports.Vector3D = Vector3D;
-//---- Curve3D ------------------------------------------------------------------
+
+},{"./shape":61}],57:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var math_1 = require("./math");
 var Curve3D = /** @class */ (function () {
     function Curve3D(vectors) {
         this.path = [];
@@ -57635,7 +57531,7 @@ var Curve3D = /** @class */ (function () {
         return this;
     };
     Curve3D.prototype.Rotate = function (rotation) {
-        var rotation_matrix = RotationMatrix_(rotation);
+        var rotation_matrix = math_1.RotationMatrix(rotation);
         for (var i = 0; i < this.path.length; ++i) {
             this.path[i].ApplyMatrix_(rotation_matrix);
         }
@@ -57673,83 +57569,11 @@ var Curve3D = /** @class */ (function () {
     return Curve3D;
 }());
 exports.Curve3D = Curve3D;
-//---- Shape --------------------------------------------------------------------
-var Shape = /** @class */ (function () {
-    function Shape(paths) {
-        this.paths = [];
-        for (var i = 0; i < paths.length; ++i) {
-            this.paths.push(paths[i].Copy());
-        }
-    }
-    Shape.prototype.Translate = function (vector) {
-        for (var i = 0; i < this.paths.length; ++i) {
-            this.paths[i].Translate(vector);
-        }
-        ;
-        return this;
-    };
-    Shape.prototype.Rotate = function (rotation) {
-        for (var i = 0; i < this.paths.length; ++i) {
-            this.paths[i].Rotate(rotation);
-        }
-        ;
-        return this;
-    };
-    Shape.prototype.Copy = function () {
-        return new Shape(this.paths);
-    };
-    Shape.prototype.ToCsgCag_ = function () {
-        var points = [];
-        for (var i = 0; i < this.paths.length; ++i) {
-            points.push(this.paths[i].path.map(function (x) { return x.vector; }));
-        }
-        return csg.CAG.fromPoints(points);
-    };
-    /**
-     * Linearly extrudes the shape along de z-axis
-     *
-     * @param {number} height extrusion height
-     * @returns {Geometry}
-     */
-    Shape.prototype.Extrude = function (height) {
-        return new Geometry(this.ToCsgCag_().extrude({ offset: [0, 0, height], twiststeps: 1, twistangle: 0 }));
-    };
-    /**
-     * Revolves the shape around the y-axis
-     *
-     * @param {number} angle angle of rotation in degrees
-     * @param {number} resolution number of polygons per 360 degree revolution
-     * @returns {Geometry}
-     */
-    Shape.prototype.Revolve = function (angle, resolution) {
-        if (resolution === void 0) { resolution = 12; }
-        return new Geometry(this.ToCsgCag_().rotateExtrude({ angle: angle, resolution: resolution }));
-    };
-    return Shape;
-}());
-exports.Shape = Shape;
-//---- Plane -------------------------------------------------------------
-var Plane = /** @class */ (function () {
-    function Plane(normal, point) {
-        this.plane = csg.CSG.Plane.fromNormalAndPoint(normal.vector, point.vector);
-    }
-    Plane.prototype.Translate = function (vector) {
-        this.plane = this.plane.transform(csg.Matrix4x4.translation(vector.vector));
-        return this;
-    };
-    Plane.prototype.Flip = function () {
-        this.plane = this.plane.flipped();
-        return this;
-    };
-    Plane.prototype.Copy = function () {
-        var copyPlane = new Plane(new Vector3D(0, 0, 1), new Vector3D(0, 0, 0));
-        copyPlane.plane = new csg.CSG.Plane(this.plane.normal, this.plane.w);
-        return copyPlane;
-    };
-    return Plane;
-}());
-exports.Plane = Plane;
-//---- Geometry -----------------------------------------------------------------
+
+},{"./math":59}],58:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var csg = require("@jscad/csg");
 var Geometry = /** @class */ (function () {
     function Geometry(geometry) {
         this.geometry = geometry;
@@ -57791,4 +57615,255 @@ var Geometry = /** @class */ (function () {
 }());
 exports.Geometry = Geometry;
 
-},{"@jscad/csg":3}]},{},[1]);
+},{"@jscad/csg":3}],59:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+function toRadians(angle) {
+    return angle / 180 * Math.PI;
+}
+exports.toRadians = toRadians;
+function toDegrees(radian) {
+    return radian / Math.PI * 180;
+}
+exports.toDegrees = toDegrees;
+function RotationMatrix(rotation) {
+    var theta = [toDegrees(rotation[0]), toDegrees(rotation[0]), toDegrees(rotation[0])];
+    var cosa = Math.cos(theta[0]);
+    var sina = Math.sin(theta[0]);
+    var cosb = Math.cos(theta[1]);
+    var sinb = Math.sin(theta[1]);
+    var cosc = Math.cos(theta[2]);
+    var sinc = Math.sin(theta[2]);
+    return [[cosb * cosc, -cosb * sinc, sinb],
+        [sina * sinb * cosc + cosa * sinc, -sina * sinb * sinc + cosa * cosc, -sina * cosb],
+        [-cosa * sinb * cosc + sina * sinc, cosa * sinb * sinc + sina * cosc, cosa * cosb]];
+}
+exports.RotationMatrix = RotationMatrix;
+
+},{}],60:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var vector3d_1 = require("./vector3d");
+var csg = require("@jscad/csg");
+var Plane = /** @class */ (function () {
+    function Plane(normal, point) {
+        this.plane = csg.CSG.Plane.fromNormalAndPoint(normal.vector, point.vector);
+    }
+    Plane.prototype.Translate = function (vector) {
+        this.plane = this.plane.transform(csg.Matrix4x4.translation(vector.vector));
+        return this;
+    };
+    Plane.prototype.Flip = function () {
+        this.plane = this.plane.flipped();
+        return this;
+    };
+    Plane.prototype.Copy = function () {
+        var copyPlane = new Plane(new vector3d_1.Vector3D(0, 0, 1), new vector3d_1.Vector3D(0, 0, 0));
+        copyPlane.plane = new csg.CSG.Plane(this.plane.normal, this.plane.w);
+        return copyPlane;
+    };
+    return Plane;
+}());
+exports.Plane = Plane;
+
+},{"./vector3d":63,"@jscad/csg":3}],61:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var geometry_1 = require("./geometry");
+var csg = require("@jscad/csg");
+var Shape = /** @class */ (function () {
+    function Shape(paths) {
+        this.paths = [];
+        for (var i = 0; i < paths.length; ++i) {
+            this.paths.push(paths[i].Copy());
+        }
+    }
+    Shape.prototype.Translate = function (vector) {
+        for (var i = 0; i < this.paths.length; ++i) {
+            this.paths[i].Translate(vector);
+        }
+        ;
+        return this;
+    };
+    Shape.prototype.Rotate = function (rotation) {
+        for (var i = 0; i < this.paths.length; ++i) {
+            this.paths[i].Rotate(rotation);
+        }
+        ;
+        return this;
+    };
+    Shape.prototype.Copy = function () {
+        return new Shape(this.paths);
+    };
+    Shape.prototype.ToCsgCag_ = function () {
+        var points = [];
+        for (var i = 0; i < this.paths.length; ++i) {
+            points.push(this.paths[i].path.map(function (x) { return x.vector; }));
+        }
+        return csg.CAG.fromPoints(points);
+    };
+    /**
+     * Linearly extrudes the shape along de z-axis
+     *
+     * @param {number} height extrusion height
+     * @returns {Geometry}
+     */
+    Shape.prototype.Extrude = function (height) {
+        return new geometry_1.Geometry(this.ToCsgCag_().extrude({ offset: [0, 0, height], twiststeps: 1, twistangle: 0 }));
+    };
+    /**
+     * Revolves the shape around the y-axis
+     *
+     * @param {number} angle angle of rotation in degrees
+     * @param {number} resolution number of polygons per 360 degree revolution
+     * @returns {Geometry}
+     */
+    Shape.prototype.Revolve = function (angle, resolution) {
+        if (resolution === void 0) { resolution = 12; }
+        return new geometry_1.Geometry(this.ToCsgCag_().rotateExtrude({ angle: angle, resolution: resolution }));
+    };
+    return Shape;
+}());
+exports.Shape = Shape;
+
+},{"./geometry":58,"@jscad/csg":3}],62:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var math_1 = require("./math");
+var Vector2D = /** @class */ (function () {
+    function Vector2D(x, y) {
+        this.vector = [x, y];
+    }
+    Vector2D.prototype.Translate = function (vector, mult) {
+        if (mult === void 0) { mult = 1; }
+        for (var i = 0; i < 2; i++) {
+            this.vector[i] += vector[i] * mult;
+        }
+        return this;
+    };
+    Vector2D.prototype.Multiply = function (mult) {
+        for (var i = 0; i < 2; i++) {
+            this.vector[i] *= mult;
+        }
+        return this;
+    };
+    Vector2D.prototype.Rotate = function (rotation) {
+        var radians = math_1.toRadians(rotation);
+        var rotatedVector = [this.vector[0] * Math.cos(radians) - this.vector[1] * Math.sin(radians),
+            this.vector[0] * Math.sin(radians) + this.vector[1] * Math.cos(radians)];
+        this.vector = rotatedVector;
+        return this;
+    };
+    Vector2D.prototype.Copy = function () {
+        return new Vector2D(this.vector[0], this.vector[1]);
+    };
+    Vector2D.prototype.Length = function () {
+        return Math.sqrt(Math.pow(this.vector[0], 2) + Math.pow(this.vector[1], 2));
+    };
+    Vector2D.prototype.DistanceTo = function (vector) {
+        return new Vector2D(vector[0] - this.vector[0], vector[1] - this.vector[1]).Length();
+    };
+    /**
+     * Calculate the angle between the vector and the x-axis
+     *
+     * @returns {number}    angle between the vector and the x-axis in degrees
+     */
+    Vector2D.prototype.Angle = function () {
+        return math_1.toDegrees(Math.atan2(this.vector[1], this.vector[2]));
+    };
+    return Vector2D;
+}());
+exports.Vector2D = Vector2D;
+
+},{"./math":59}],63:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var math_1 = require("./math");
+var plane_1 = require("./plane");
+var Vector3D = /** @class */ (function () {
+    function Vector3D(x, y, z) {
+        this.vector = [x, y, z];
+    }
+    Vector3D.prototype.Translate = function (vector, mult) {
+        if (mult === void 0) { mult = 1; }
+        for (var i = 0; i < 3; i++) {
+            this.vector[i] += vector[i] * mult;
+        }
+        return this;
+    };
+    Vector3D.prototype.Multiply = function (mult) {
+        for (var i = 0; i < 3; i++) {
+            this.vector[i] *= mult;
+        }
+        return this;
+    };
+    Vector3D.prototype.ApplyMatrix_ = function (matrix) {
+        var new_vector = [0, 0, 0];
+        for (var i = 0; i < 3; i++) {
+            for (var j = 0; j < 3; j++) {
+                new_vector[i] = matrix[i][j] * this.vector[j];
+            }
+        }
+        this.vector = new_vector;
+    };
+    Vector3D.prototype.Rotate = function (rotation) {
+        var rotation_matrix = math_1.RotationMatrix(rotation);
+        this.ApplyMatrix_(rotation_matrix);
+        return this;
+    };
+    Vector3D.prototype.Copy = function () {
+        return new Vector3D(this.vector[0], this.vector[1], this.vector[2]);
+    };
+    Vector3D.prototype.Length = function () {
+        return Math.sqrt(Math.pow(this.vector[0], 2) + Math.pow(this.vector[1], 2) +
+            Math.pow(this.vector[3], 2));
+    };
+    Vector3D.prototype.DistanceTo = function (vector) {
+        return new Vector3D(vector[0] - this.vector[0], vector[1] - this.vector[1], vector[2] - this.vector[2]).Length();
+    };
+    Vector3D.prototype.OrthogonalPlane = function (offset) {
+        return new plane_1.Plane(this, offset);
+    };
+    return Vector3D;
+}());
+exports.Vector3D = Vector3D;
+
+},{"./math":59,"./plane":60}],64:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var THREE = require("three");
+function Csg2TreeGeometry(geometry) {
+    var three_geometry = new THREE.BufferGeometry();
+    var triangles = geometry.geometry.toTriangles();
+    var positions = [];
+    var normals = [];
+    for (var i = 0; i < triangles.length; ++i) {
+        var ax = triangles[i].vertices[0].pos.x;
+        var ay = triangles[i].vertices[0].pos.y;
+        var az = triangles[i].vertices[0].pos.z;
+        positions.push(ax, ay, az);
+        var bx = triangles[i].vertices[1].pos.x;
+        var by = triangles[i].vertices[1].pos.y;
+        var bz = triangles[i].vertices[1].pos.z;
+        positions.push(bx, by, bz);
+        var cx = triangles[i].vertices[2].pos.x;
+        var cy = triangles[i].vertices[2].pos.y;
+        var cz = triangles[i].vertices[2].pos.z;
+        positions.push(cx, cy, cz);
+        var nx = triangles[i].plane.normal.x;
+        var ny = triangles[i].plane.normal.y;
+        var nz = triangles[i].plane.normal.z;
+        normals.push(nx, ny, nz);
+        normals.push(nx, ny, nz);
+        normals.push(nx, ny, nz);
+    }
+    function disposeArray() {
+        this.array = null;
+    }
+    three_geometry.addAttribute('position', new THREE.Float32BufferAttribute(positions, 3).onUpload(disposeArray));
+    three_geometry.addAttribute('normal', new THREE.Float32BufferAttribute(normals, 3).onUpload(disposeArray));
+    return three_geometry;
+}
+exports.Csg2TreeGeometry = Csg2TreeGeometry;
+
+},{"three":53}]},{},[1]);

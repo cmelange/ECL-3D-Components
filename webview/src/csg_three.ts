@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Geometry } from './csg_wrapper';
+import { Geometry } from './3d_model_representation';
 
 export function Csg2TreeGeometry(geometry: Geometry): THREE.BufferGeometry
 {
