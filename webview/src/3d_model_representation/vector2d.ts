@@ -1,4 +1,4 @@
-import {toDegrees, toRadians} from './math';
+import {toDegrees, toRadians, RotationMatrix2D} from './math';
 
 export class Vector2D {
 
@@ -24,12 +24,21 @@ export class Vector2D {
         return this;
     }
 
+    ApplyMatrix_(matrix: number[][]): void {
+        let new_vector = [0,0];
+        for (let i=0; i<2; i++)
+        {
+            for (let j=0; j<2; j++)
+            {
+                new_vector[i] = matrix[i][j]*this.vector[j];
+            }
+        }
+        this.vector = new_vector;
+    }
+
     Rotate(rotation: number): Vector2D {
-        let radians = toRadians(rotation);
-        let rotatedVector =
-            [this.vector[0]*Math.cos(radians) - this.vector[1]*Math.sin(radians),
-            this.vector[0]*Math.sin(radians) + this.vector[1]*Math.cos(radians)]
-        this.vector = rotatedVector;
+        let rotation_matrix = RotationMatrix2D(rotation);
+        this.ApplyMatrix_(rotation_matrix);
         return this;
     }
 

@@ -1,3 +1,4 @@
+import {RotationMatrix2D} from './math';
 import {Vector2D} from './vector2d';
 import {Shape} from './shape';
 
@@ -20,8 +21,9 @@ export class Curve2D {
     }
 
     Rotate(rotation: number): Curve2D {
+        let rotation_matrix = RotationMatrix2D(rotation);
         for (var i=0; i<this.path.length; ++i) {
-            this.path[i].Rotate(rotation);
+            this.path[i].ApplyMatrix_(rotation_matrix);
         };
         return this;
     }

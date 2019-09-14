@@ -1,4 +1,4 @@
-import {RotationMatrix} from './math';
+import {RotationMatrix3D} from './math';
 import {Plane} from './plane';
 
 export class Vector3D {
@@ -38,7 +38,7 @@ export class Vector3D {
     }
 
     Rotate(rotation: number[]): Vector3D {
-        let rotation_matrix = RotationMatrix(rotation);
+        let rotation_matrix = RotationMatrix3D(rotation);
         this.ApplyMatrix_(rotation_matrix);
         return this;
     }

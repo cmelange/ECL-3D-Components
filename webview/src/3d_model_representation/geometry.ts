@@ -5,9 +5,15 @@ import * as csg from '@jscad/csg';
 export class Geometry {
 
     geometry;
+    name: string;
 
-    constructor(geometry) {
+    constructor(geometry, name='geometry') {
         this.geometry = geometry;
+    }
+
+    Name(name: string) {
+        this.name = name;
+        return this;
     }
 
     Translate(vector: Vector3D): Geometry {
@@ -49,7 +55,5 @@ export class Geometry {
         this.geometry = this.geometry.intersect(geometry.geometry);
         return this;
     }
-
-    
 
 }

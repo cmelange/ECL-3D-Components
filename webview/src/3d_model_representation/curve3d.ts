@@ -1,4 +1,4 @@
-import {RotationMatrix} from './math';
+import {RotationMatrix3D} from './math';
 import {Vector3D} from './vector3d';
 
 export class Curve3D {
@@ -20,7 +20,7 @@ export class Curve3D {
     }
 
     Rotate(rotation: number[]): Curve3D {
-        let rotation_matrix = RotationMatrix(rotation);
+        let rotation_matrix = RotationMatrix3D(rotation);
         for (var i=0; i<this.path.length; ++i) {
             this.path[i].ApplyMatrix_(rotation_matrix);
         };
