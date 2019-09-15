@@ -1,5 +1,5 @@
 import { Geometry } from "./geometry";
-import { Material } from "three";
+import { Material } from "./material";
 
 export class Mesh
 {

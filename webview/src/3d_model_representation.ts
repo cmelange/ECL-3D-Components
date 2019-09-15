@@ -14,5 +14,6 @@ export {Image} from './3d_model_representation/image';
 export {TextureMap,
         FilterType,
         WrapMethod} from './3d_model_representation/texture_map';
+export {Material} from './3d_model_representation/material';
 export {Mesh} from './3d_model_representation/mesh';
 export {Group} from './3d_model_representation/group';

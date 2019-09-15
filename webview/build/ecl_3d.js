@@ -1,5 +1,5 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
-window.CSG = require('./index');
+window.Model3D = require('./index');
 window.THREE = require('three');
 window.CSGLIB = require('@jscad/csg');
 
@@ -10,9 +10,9 @@ function __export(m) {
 }
 exports.__esModule = true;
 __export(require("./src/3d_model_representation"));
-__export(require("./src/csg_three"));
+__export(require("./src/model2three"));
 
-},{"./src/3d_model_representation":54,"./src/csg_three":64}],3:[function(require,module,exports){
+},{"./src/3d_model_representation":54,"./src/model2three":69}],3:[function(require,module,exports){
 /*
 ## License
 
@@ -57351,8 +57351,20 @@ var plane_1 = require("./3d_model_representation/plane");
 exports.Plane = plane_1.Plane;
 var geometry_1 = require("./3d_model_representation/geometry");
 exports.Geometry = geometry_1.Geometry;
+var image_1 = require("./3d_model_representation/image");
+exports.Image = image_1.Image;
+var texture_map_1 = require("./3d_model_representation/texture_map");
+exports.TextureMap = texture_map_1.TextureMap;
+exports.FilterType = texture_map_1.FilterType;
+exports.WrapMethod = texture_map_1.WrapMethod;
+var material_1 = require("./3d_model_representation/material");
+exports.Material = material_1.Material;
+var mesh_1 = require("./3d_model_representation/mesh");
+exports.Mesh = mesh_1.Mesh;
+var group_1 = require("./3d_model_representation/group");
+exports.Group = group_1.Group;
 
-},{"./3d_model_representation/2d_functions":55,"./3d_model_representation/curve2d":56,"./3d_model_representation/curve3d":57,"./3d_model_representation/geometry":58,"./3d_model_representation/plane":60,"./3d_model_representation/shape":61,"./3d_model_representation/vector2d":62,"./3d_model_representation/vector3d":63}],55:[function(require,module,exports){
+},{"./3d_model_representation/2d_functions":55,"./3d_model_representation/curve2d":56,"./3d_model_representation/curve3d":57,"./3d_model_representation/geometry":58,"./3d_model_representation/group":59,"./3d_model_representation/image":60,"./3d_model_representation/material":61,"./3d_model_representation/mesh":63,"./3d_model_representation/plane":64,"./3d_model_representation/shape":65,"./3d_model_representation/texture_map":66,"./3d_model_representation/vector2d":67,"./3d_model_representation/vector3d":68}],55:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var math_1 = require("./math");
@@ -57425,9 +57437,10 @@ function Parabola(points, extremum, numPoints, iterations) {
 }
 exports.Parabola = Parabola;
 
-},{"./curve2d":56,"./math":59,"./vector2d":62}],56:[function(require,module,exports){
+},{"./curve2d":56,"./math":62,"./vector2d":67}],56:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
+var math_1 = require("./math");
 var shape_1 = require("./shape");
 var Curve2D = /** @class */ (function () {
     function Curve2D(vectors) {
@@ -57445,8 +57458,9 @@ var Curve2D = /** @class */ (function () {
         return this;
     };
     Curve2D.prototype.Rotate = function (rotation) {
+        var rotation_matrix = math_1.RotationMatrix2D(rotation);
         for (var i = 0; i < this.path.length; ++i) {
-            this.path[i].Rotate(rotation);
+            this.path[i].ApplyMatrix_(rotation_matrix);
         }
         ;
         return this;
@@ -57511,7 +57525,7 @@ var Curve2D = /** @class */ (function () {
 }());
 exports.Curve2D = Curve2D;
 
-},{"./shape":61}],57:[function(require,module,exports){
+},{"./math":62,"./shape":65}],57:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var math_1 = require("./math");
@@ -57531,7 +57545,7 @@ var Curve3D = /** @class */ (function () {
         return this;
     };
     Curve3D.prototype.Rotate = function (rotation) {
-        var rotation_matrix = math_1.RotationMatrix(rotation);
+        var rotation_matrix = math_1.RotationMatrix3D(rotation);
         for (var i = 0; i < this.path.length; ++i) {
             this.path[i].ApplyMatrix_(rotation_matrix);
         }
@@ -57570,14 +57584,20 @@ var Curve3D = /** @class */ (function () {
 }());
 exports.Curve3D = Curve3D;
 
-},{"./math":59}],58:[function(require,module,exports){
+},{"./math":62}],58:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var csg = require("@jscad/csg");
 var Geometry = /** @class */ (function () {
-    function Geometry(geometry) {
+    function Geometry(geometry, name) {
+        if (name === void 0) { name = 'geometry'; }
+        this.name = name;
         this.geometry = geometry;
     }
+    Geometry.prototype.Name = function (name) {
+        this.name = name;
+        return this;
+    };
     Geometry.prototype.Translate = function (vector) {
         this.geometry = csg.translate(vector.vector, this.geometry);
         return this;
@@ -57618,6 +57638,208 @@ exports.Geometry = Geometry;
 },{"@jscad/csg":3}],59:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
+var vector3d_1 = require("./vector3d");
+var Group = /** @class */ (function () {
+    function Group(name) {
+        if (name === void 0) { name = 'group'; }
+        this.name = name;
+        this.meshes = new Map();
+        this.children = new Map();
+        this.translation = new vector3d_1.Vector3D(0, 0, 0);
+        this.rotation = [0, 0, 0];
+        this.scale = [1, 1, 1];
+    }
+    Group.prototype.Name = function (name) {
+        this.name = name;
+        return this;
+    };
+    Group.prototype.AddMesh = function (mesh) {
+        this.meshes.set(mesh.name, mesh);
+        return this;
+    };
+    Group.prototype.RemoveMesh = function (name) {
+        this.meshes["delete"](name);
+        return this;
+    };
+    Group.prototype.Translation = function (vector) {
+        this.translation = vector;
+        return this;
+    };
+    Group.prototype.Rotation = function (rotation) {
+        this.rotation = rotation;
+        return this;
+    };
+    Group.prototype.Scale = function (scale) {
+        this.scale = scale;
+        return this;
+    };
+    Group.prototype.AddGroup = function (group) {
+        this.children.set(group.name, group);
+        return this;
+    };
+    Group.prototype.RemoveGroup = function (name) {
+        this.children["delete"](name);
+        return this;
+    };
+    return Group;
+}());
+exports.Group = Group;
+
+},{"./vector3d":68}],60:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var Image = /** @class */ (function () {
+    function Image(name) {
+        if (name === void 0) { name = 'image'; }
+        this.name = name;
+    }
+    Image.prototype.Name = function (name) {
+        this.name = name;
+        return this;
+    };
+    Image.prototype.Image = function (uri) {
+        this.image = uri;
+        return this;
+    };
+    return Image;
+}());
+exports.Image = Image;
+
+},{}],61:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var Material = /** @class */ (function () {
+    function Material(name) {
+        if (name === void 0) { name = 'material'; }
+        this.baseColor = [1, 1, 1, 1];
+        this.metallic = 1;
+        this.roughness = 1;
+        this.name = name;
+    }
+    Material.prototype.Name = function (name) {
+        this.name = name;
+        return this;
+    };
+    /**
+     * Set the RGBA components of the base color of the material. Each element in the array
+     * must be greater than or equal to 0 and less than or equal to 1. These values are linear.
+     * If a baseColorTexture is specified, this value is multiplied with the texel values.
+     *
+     * @param {[number, number, number, number]} baseColor
+     * @returns {Material}
+     */
+    Material.prototype.BaseColor = function (baseColor) {
+        this.baseColor = baseColor;
+        return this;
+    };
+    /**
+     * Set the base color texture. The first three components (RGB) are encoded with the
+     * sRGB transfer function. They specify the base color of the material. If the fourth
+     * component (A) is present, it represents the linear alpha coverage of the material.
+     *
+     * @param {TextureMap} baseColorTexture
+     * @returns {Material}
+     */
+    Material.prototype.BaseColorTexture = function (baseColorTexture) {
+        this.baseColorTexture = baseColorTexture;
+        return this;
+    };
+    /**
+     * Set the metalness of the material. A value of 1.0 means the material is a metal.
+     * A value of 0.0 means the material is a dielectric. Values in between are for
+     * blending between metals and dielectrics such as dirty metallic surfaces. This
+     * value is linear. If a metallicRoughnessTexture is specified, this value is
+     * multiplied with the metallic texel values.
+     *
+     * @param {number} metallic
+     * @returns {Material}
+     */
+    Material.prototype.Metallic = function (metallic) {
+        this.metallic = metallic;
+        return this;
+    };
+    /**
+     * Set the roughness of the material. A value of 1.0 means the material is completely rough.
+     * A value of 0.0 means the material is completely smooth. This value is linear. If a
+     * metallicRoughnessTexture is specified, this value is multiplied with the roughness
+     * texel values.
+     *
+     * @param {number} roughness
+     * @returns {Material}
+     */
+    Material.prototype.Roughness = function (roughness) {
+        this.roughness = roughness;
+        return this;
+    };
+    /**
+     * Set the metallic-roughness texture. The metalness values are sampled from the Bleu channel.
+     * The roughness values are sampled from the Green channel. These values are linear. If other
+     * channels are present (Red or Alpha), they are ignored for metallic-roughness calculations.
+     *
+     * @param {TextureMap} metalRoughnessTexture
+     * @returns {Material}
+     */
+    Material.prototype.MetalRoughnessTexture = function (metalRoughnessTexture) {
+        this.metalRoughnessTexture = metalRoughnessTexture;
+        return this;
+    };
+    /**
+     * Set the tangent space normal map. The texture contains RGB components in linear space. Each
+     * texel represents the XYZ components of a normal vector in tangent space. Red [0 to 255] maps
+     * to X [-1 to 1]. Green [0 to 255] maps to Y [-1 to 1]. Blue [128 to 255] maps to Z [1/255 to 1].
+     * The normal vectors use OpenGL conventions where +X is right and +Y is up. +Z points toward the
+     * viewer.
+     *
+     * @param {TextureMap} normalTexture
+     * @returns {Material}
+     */
+    Material.prototype.NormalTexture = function (normalTexture) {
+        this.normalTexture = normalTexture;
+        return this;
+    };
+    /**
+     * Set the occlusion map texture. The occlusion values are sampled from the R channel. Higher
+     * values indicate areas that should receive full indirect lighting and lower values indicate no
+     * indirect lighting. These values are linear. If other channels are present (GBA), they are
+     * ignored for occlusion calculations.
+     *
+     * @param {TextureMap} occlusionTexture
+     * @returns {Material}
+     */
+    Material.prototype.OcclusionTexture = function (occlusionTexture) {
+        this.occlusionTexture = occlusionTexture;
+        return this;
+    };
+    /**
+     * Set the RGB components of the emissive color of the material. These values are linear. If an
+     * emissiveTexture is specified, this value is multiplied with the texel values.
+     *
+     * @param {[number, number, number]} emissive
+     * @returns {Material}
+     */
+    Material.prototype.Emissive = function (emissive) {
+        this.emissive = emissive;
+        return this;
+    };
+    /**
+     * Set the emissive map tthat controls the color and intensity of the light being emitted by the
+     * material. This texture contains RGB components encoded with the sRGB transfer function. If a
+     * fourth component (A) is present, it is ignored.
+     *
+     * @param {TextureMap} emissiveTexture
+     * @returns {Material}
+     */
+    Material.prototype.EmissiveTexture = function (emissiveTexture) {
+        this.emissiveTexture = emissiveTexture;
+        return this;
+    };
+    return Material;
+}());
+exports.Material = Material;
+
+},{}],62:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
 function toRadians(angle) {
     return angle / 180 * Math.PI;
 }
@@ -57626,7 +57848,13 @@ function toDegrees(radian) {
     return radian / Math.PI * 180;
 }
 exports.toDegrees = toDegrees;
-function RotationMatrix(rotation) {
+function RotationMatrix2D(rotation) {
+    var theta = toDegrees(rotation);
+    return [[Math.cos(theta), -Math.sin(theta)],
+        [Math.sin(theta), Math.cos(theta)]];
+}
+exports.RotationMatrix2D = RotationMatrix2D;
+function RotationMatrix3D(rotation) {
     var theta = [toDegrees(rotation[0]), toDegrees(rotation[0]), toDegrees(rotation[0])];
     var cosa = Math.cos(theta[0]);
     var sina = Math.sin(theta[0]);
@@ -57638,9 +57866,35 @@ function RotationMatrix(rotation) {
         [sina * sinb * cosc + cosa * sinc, -sina * sinb * sinc + cosa * cosc, -sina * cosb],
         [-cosa * sinb * cosc + sina * sinc, cosa * sinb * sinc + sina * cosc, cosa * cosb]];
 }
-exports.RotationMatrix = RotationMatrix;
+exports.RotationMatrix3D = RotationMatrix3D;
 
-},{}],60:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var Mesh = /** @class */ (function () {
+    function Mesh(geometry, material, name) {
+        if (name === void 0) { name = 'mesh'; }
+        this.geometry = geometry;
+        this.material = material;
+        this.name = name;
+    }
+    Mesh.prototype.Name = function (name) {
+        this.name = name;
+        return this;
+    };
+    Mesh.prototype.Geometry = function (geometry) {
+        this.geometry = geometry;
+        return this;
+    };
+    Mesh.prototype.Material = function (material) {
+        this.material = material;
+        return this;
+    };
+    return Mesh;
+}());
+exports.Mesh = Mesh;
+
+},{}],64:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var vector3d_1 = require("./vector3d");
@@ -57666,7 +57920,7 @@ var Plane = /** @class */ (function () {
 }());
 exports.Plane = Plane;
 
-},{"./vector3d":63,"@jscad/csg":3}],61:[function(require,module,exports){
+},{"./vector3d":68,"@jscad/csg":3}],65:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var geometry_1 = require("./geometry");
@@ -57726,7 +57980,60 @@ var Shape = /** @class */ (function () {
 }());
 exports.Shape = Shape;
 
-},{"./geometry":58,"@jscad/csg":3}],62:[function(require,module,exports){
+},{"./geometry":58,"@jscad/csg":3}],66:[function(require,module,exports){
+"use strict";
+exports.__esModule = true;
+var FilterType;
+(function (FilterType) {
+    FilterType[FilterType["NEAREST"] = 9728] = "NEAREST";
+    FilterType[FilterType["LINEAR"] = 9729] = "LINEAR";
+})(FilterType = exports.FilterType || (exports.FilterType = {}));
+var WrapMethod;
+(function (WrapMethod) {
+    WrapMethod[WrapMethod["CLAMP_TO_EDGE"] = 33071] = "CLAMP_TO_EDGE";
+    WrapMethod[WrapMethod["MIRRORED_REPEAT"] = 33648] = "MIRRORED_REPEAT";
+    WrapMethod[WrapMethod["REPEAT"] = 10497] = "REPEAT";
+})(WrapMethod = exports.WrapMethod || (exports.WrapMethod = {}));
+var TextureMap = /** @class */ (function () {
+    function TextureMap() {
+    }
+    TextureMap.prototype.Image = function (image) {
+        this.image = image;
+        return this;
+    };
+    TextureMap.prototype.MagFilter = function (filterType) {
+        this.magFilter = filterType;
+        return this;
+    };
+    TextureMap.prototype.MinFilter = function (filterType) {
+        this.minFilter = filterType;
+        return this;
+    };
+    TextureMap.prototype.WrapS = function (wrapMethod) {
+        this.wrapS = wrapMethod;
+        return this;
+    };
+    TextureMap.prototype.WrapT = function (wrapMethod) {
+        this.wrapT = wrapMethod;
+        return this;
+    };
+    TextureMap.prototype.Offset = function (offset) {
+        this.offset = offset;
+        return this;
+    };
+    TextureMap.prototype.Rotation = function (angle) {
+        this.rotation = angle;
+        return this;
+    };
+    TextureMap.prototype.Scale = function (scale) {
+        this.scale = scale;
+        return this;
+    };
+    return TextureMap;
+}());
+exports.TextureMap = TextureMap;
+
+},{}],67:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var math_1 = require("./math");
@@ -57747,11 +58054,18 @@ var Vector2D = /** @class */ (function () {
         }
         return this;
     };
+    Vector2D.prototype.ApplyMatrix_ = function (matrix) {
+        var new_vector = [0, 0];
+        for (var i = 0; i < 2; i++) {
+            for (var j = 0; j < 2; j++) {
+                new_vector[i] = matrix[i][j] * this.vector[j];
+            }
+        }
+        this.vector = new_vector;
+    };
     Vector2D.prototype.Rotate = function (rotation) {
-        var radians = math_1.toRadians(rotation);
-        var rotatedVector = [this.vector[0] * Math.cos(radians) - this.vector[1] * Math.sin(radians),
-            this.vector[0] * Math.sin(radians) + this.vector[1] * Math.cos(radians)];
-        this.vector = rotatedVector;
+        var rotation_matrix = math_1.RotationMatrix2D(rotation);
+        this.ApplyMatrix_(rotation_matrix);
         return this;
     };
     Vector2D.prototype.Copy = function () {
@@ -57775,7 +58089,7 @@ var Vector2D = /** @class */ (function () {
 }());
 exports.Vector2D = Vector2D;
 
-},{"./math":59}],63:[function(require,module,exports){
+},{"./math":62}],68:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var math_1 = require("./math");
@@ -57807,7 +58121,7 @@ var Vector3D = /** @class */ (function () {
         this.vector = new_vector;
     };
     Vector3D.prototype.Rotate = function (rotation) {
-        var rotation_matrix = math_1.RotationMatrix(rotation);
+        var rotation_matrix = math_1.RotationMatrix3D(rotation);
         this.ApplyMatrix_(rotation_matrix);
         return this;
     };
@@ -57828,12 +58142,13 @@ var Vector3D = /** @class */ (function () {
 }());
 exports.Vector3D = Vector3D;
 
-},{"./math":59,"./plane":60}],64:[function(require,module,exports){
+},{"./math":62,"./plane":64}],69:[function(require,module,exports){
 "use strict";
 exports.__esModule = true;
 var THREE = require("three");
 function Csg2TreeGeometry(geometry) {
     var three_geometry = new THREE.BufferGeometry();
+    three_geometry.name = geometry.name;
     var triangles = geometry.geometry.toTriangles();
     var positions = [];
     var normals = [];
@@ -57865,5 +58180,44 @@ function Csg2TreeGeometry(geometry) {
     return three_geometry;
 }
 exports.Csg2TreeGeometry = Csg2TreeGeometry;
+function ModelMaterial2ThreeMaterial(material) {
+    var three_parameters = {
+        'color': new THREE.Color(material.baseColor[0], material.baseColor[1], material.baseColor[2]),
+        'opacity': material.baseColor[3],
+        'metalness': material.metallic,
+        'roughness': material.roughness
+        //TODO add textures
+    };
+    var three_material = new THREE.MeshStandardMaterial(three_parameters);
+    three_material.name = material.name;
+    return three_material;
+}
+exports.ModelMaterial2ThreeMaterial = ModelMaterial2ThreeMaterial;
+function ModelMesh2ThreeMesh(mesh) {
+    var three_material = ModelMaterial2ThreeMaterial(mesh.material);
+    var three_geometry = Csg2TreeGeometry(mesh.geometry);
+    var three_mesh = new THREE.Mesh(three_geometry, three_material);
+    three_mesh.name = mesh.name;
+    return three_mesh;
+}
+exports.ModelMesh2ThreeMesh = ModelMesh2ThreeMesh;
+function ModelGroup2ThreeGroup(group) {
+    var three_group = new THREE.Group();
+    three_group.name = group.name;
+    group.meshes.forEach(function (mesh, key) {
+        three_group.add(ModelMesh2ThreeMesh(mesh));
+    });
+    group.children.forEach(function (group, key) {
+        three_group.add(ModelGroup2ThreeGroup(group));
+    });
+    var scale_matrix = new THREE.Matrix4().makeScale(group.scale[0], group.scale[1], group.scale[2]);
+    three_group.applyMatrix(scale_matrix);
+    three_group.setRotationFromEuler(new THREE.Euler(group.rotation[0], group.rotation[1], group.rotation[2]));
+    var translation_vector = group.translation.vector;
+    var translation_matrix = new THREE.Matrix4().makeTranslation(translation_vector[0], translation_vector[1], translation_vector[2]);
+    three_group.applyMatrix(translation_matrix);
+    return three_group;
+}
+exports.ModelGroup2ThreeGroup = ModelGroup2ThreeGroup;
 
 },{"three":53}]},{},[1]);

@@ -4,4 +4,4 @@ function __export(m) {
 }
 exports.__esModule = true;
 __export(require("./src/3d_model_representation"));
-__export(require("./src/csg_three"));
+__export(require("./src/model2three"));

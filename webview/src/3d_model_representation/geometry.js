@@ -2,9 +2,15 @@
 exports.__esModule = true;
 var csg = require("@jscad/csg");
 var Geometry = /** @class */ (function () {
-    function Geometry(geometry) {
+    function Geometry(geometry, name) {
+        if (name === void 0) { name = 'geometry'; }
+        this.name = name;
         this.geometry = geometry;
     }
+    Geometry.prototype.Name = function (name) {
+        this.name = name;
+        return this;
+    };
     Geometry.prototype.Translate = function (vector) {
         this.geometry = csg.translate(vector.vector, this.geometry);
         return this;

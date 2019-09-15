@@ -18,11 +18,18 @@ var Vector2D = /** @class */ (function () {
         }
         return this;
     };
+    Vector2D.prototype.ApplyMatrix_ = function (matrix) {
+        var new_vector = [0, 0];
+        for (var i = 0; i < 2; i++) {
+            for (var j = 0; j < 2; j++) {
+                new_vector[i] = matrix[i][j] * this.vector[j];
+            }
+        }
+        this.vector = new_vector;
+    };
     Vector2D.prototype.Rotate = function (rotation) {
-        var radians = math_1.toRadians(rotation);
-        var rotatedVector = [this.vector[0] * Math.cos(radians) - this.vector[1] * Math.sin(radians),
-            this.vector[0] * Math.sin(radians) + this.vector[1] * Math.cos(radians)];
-        this.vector = rotatedVector;
+        var rotation_matrix = math_1.RotationMatrix2D(rotation);
+        this.ApplyMatrix_(rotation_matrix);
         return this;
     };
     Vector2D.prototype.Copy = function () {

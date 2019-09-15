@@ -15,6 +15,9 @@ export class Group
         this.name = name;
         this.meshes = new Map();
         this.children = new Map();
+        this.translation = new Vector3D(0,0,0);
+        this.rotation = [0,0,0];
+        this.scale = [1,1,1];
     }
 
     Name(name: string): Group

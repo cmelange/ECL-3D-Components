@@ -8,6 +8,7 @@ export class Geometry {
     name: string;
 
     constructor(geometry, name='geometry') {
+        this.name = name;
         this.geometry = geometry;
     }
 

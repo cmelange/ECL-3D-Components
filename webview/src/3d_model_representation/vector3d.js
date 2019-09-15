@@ -29,7 +29,7 @@ var Vector3D = /** @class */ (function () {
         this.vector = new_vector;
     };
     Vector3D.prototype.Rotate = function (rotation) {
-        var rotation_matrix = math_1.RotationMatrix(rotation);
+        var rotation_matrix = math_1.RotationMatrix3D(rotation);
         this.ApplyMatrix_(rotation_matrix);
         return this;
     };

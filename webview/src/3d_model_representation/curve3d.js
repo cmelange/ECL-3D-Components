@@ -17,7 +17,7 @@ var Curve3D = /** @class */ (function () {
         return this;
     };
     Curve3D.prototype.Rotate = function (rotation) {
-        var rotation_matrix = math_1.RotationMatrix(rotation);
+        var rotation_matrix = math_1.RotationMatrix3D(rotation);
         for (var i = 0; i < this.path.length; ++i) {
             this.path[i].ApplyMatrix_(rotation_matrix);
         }

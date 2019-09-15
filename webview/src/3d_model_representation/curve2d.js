@@ -1,5 +1,6 @@
 "use strict";
 exports.__esModule = true;
+var math_1 = require("./math");
 var shape_1 = require("./shape");
 var Curve2D = /** @class */ (function () {
     function Curve2D(vectors) {
@@ -17,8 +18,9 @@ var Curve2D = /** @class */ (function () {
         return this;
     };
     Curve2D.prototype.Rotate = function (rotation) {
+        var rotation_matrix = math_1.RotationMatrix2D(rotation);
         for (var i = 0; i < this.path.length; ++i) {
-            this.path[i].Rotate(rotation);
+            this.path[i].ApplyMatrix_(rotation_matrix);
         }
         ;
         return this;
