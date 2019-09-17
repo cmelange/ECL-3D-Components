@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Geometry, Mesh, Material, Group } from './3d_model_representation';
 
-export function Csg2TreeGeometry(geometry: Geometry): THREE.BufferGeometry
+export function csg2TreeGeometry(geometry: Geometry): THREE.BufferGeometry
 {
     let three_geometry = new THREE.BufferGeometry();
     three_geometry.name = geometry.name;
@@ -62,7 +62,7 @@ export function ModelMaterial2ThreeMaterial(material: Material): THREE.MeshStand
 export function ModelMesh2ThreeMesh(mesh: Mesh)
 {
     let three_material = ModelMaterial2ThreeMaterial(mesh.material);
-    let three_geometry = Csg2TreeGeometry(mesh.geometry);
+    let three_geometry = csg2TreeGeometry(mesh.geometry);
     let three_mesh = new THREE.Mesh(three_geometry, three_material);
     three_mesh.name = mesh.name;
     return three_mesh;
