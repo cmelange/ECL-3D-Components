@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm run clean && npm run browserify",
+    "build": "npm run tsc && npm run clean && npm run browserify",
+    "tsc": "tsc",
     "clean": "rm -rf build && mkdir build",
     "browserify": "browserify browser.js -o build/ecl_3d.js",
     "uglify": "uglifyjs build/ecl_3d.js -o build/ecl_3d.min.js"

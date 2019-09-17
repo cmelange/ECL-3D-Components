@@ -48,7 +48,8 @@ export function ModelMaterial2ThreeMaterial(material: Material): THREE.MeshStand
     let three_parameters =
     {
         'color': new THREE.Color( material.baseColor[0], material.baseColor[1], material.baseColor[2] ),
-        'opacity': material.baseColor [3],
+        'opacity': material.baseColor[3],
+        'transparent': (material.baseColor[3] < 1.0),
         'metalness': material.metallic,
         'roughness': material.roughness
         //TODO add textures
