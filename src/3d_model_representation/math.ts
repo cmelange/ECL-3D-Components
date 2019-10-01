@@ -10,14 +10,14 @@ export function toDegrees(radian: number): number
 
 export function RotationMatrix2D(rotation: number): number [][]
 {
-    let theta = toDegrees(rotation);
+    let theta = toRadians(rotation);
     return [[Math.cos(theta), -Math.sin(theta)],
             [Math.sin(theta), Math.cos(theta)]];
 }
 
 export function RotationMatrix3D(rotation: number[]): number[][]
 {
-    let theta = [toDegrees(rotation[0]), toDegrees(rotation[0]), toDegrees(rotation[0])];
+    let theta = [toRadians(rotation[0]), toRadians(rotation[1]), toRadians(rotation[2])];
 
     let cosa = Math.cos(theta[0]);
     let sina = Math.sin(theta[0]);
