@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Geometry example of patio covering</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <script src="../build/ecl_3d.js"></script>
+        <script src="./js/TrackballControls.js"></script>
+        <script>
+            /* === Set up 3D rendering environment === */
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 10000 );
+            var renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            document.body.appendChild( renderer.domElement );
+            controls = new THREE.TrackballControls(camera, renderer.domElement);
+            
+            /* === Parameters ========================================== */
+            //--design constants
+            var pillar_width = 150;
+            var pillar_depth = 120;
+            var wall_width = 60;
+            var tube_height = 50;
+            var tube_width = 80;
+            //--global dimensions
+            var width = 3000;
+            var projection = 3500;
+            var pillarsheight = 2500;
+            var wallheight = 3000;
+
+            //--span1
+            var s1_1_frontal_beam = 3; // [NO(0), SQUARED BEAM(1), INTEGRATION FOR SCREEN(2), INTEGRATION FOR SCREEN AND TERMINAL TUBE(3)]
+
+            //--pivot1
+            var p1_horizontal_side_beam = 1; // [NO(0), YES(1)]
+            var p1_horizontal_side_beam_type = 2; // [SQUARED BEAM(1), INTEGRATION FOR SCREEN(2), INTEGRATION FOR SCREEN AND TERMINAL TUBE(3)]
+
+            //--supplements
+            var add_on_intermediate_support_tube = 0; // [0..3]
+            var retractable_gutter = 0; // [NO(0), YES(1)]
+
+            //--tubes
+            var canvas_tube_type = 1; // [STANDARD(0), ARCO(1)]
+
+            //--calculated
+            var inclination_angle_roof = Math.atan((wallheight - pillarsheight)/(projection - pillar_width))*180/Math.PI;
+            var runnerlength = Math.sqrt(Math.pow(wallheight - pillarsheight,2) + Math.pow(projection - pillar_width,2));
+            var cloth_tube_bottom_length = 79.5 + 18*Math.cos(inclination_angle_roof*Math.PI/180);
+            var first_tube_x = cloth_tube_bottom_length - 40 + 100;
+            var last_tube_x = (retractable_gutter === 1) ? (runnerlength - 60) : (runnerlength - 145);
+            var tubes_total_number = Math.ceil((last_tube_x - first_tube_x) / 600) + 1 + add_on_intermediate_support_tube;
+            var tube_distance = (last_tube_x - first_tube_x) / (tubes_total_number - 1);
+
+            var profile_material_model = new Model3D.Material('profile_material').Roughness(0.25)
+                                                                                 .Metallic(0);
+            var profile_material = new THREE.MeshPhongMaterial( { color: 0xfffDF0} );
+            var cloth_material = new THREE.MeshLambertMaterial( { color: 0xff0000} );
+            
+            /* === Calculate geometry======================= */
+            //--pillars
+            var pillar_geom = (new Model3D.Rectangle(pillar_width, pillar_depth))
+                                          .Extrude(pillarsheight + pillar_width*Math.tan((180-90-inclination_angle_roof)*Math.PI/180/2))
+                                          .ClipByPlane(new Model3D.Plane(new Model3D.Vector3D(0,0,1).Rotate([0,(inclination_angle_roof-90)/2,0]),
+                                                                         new Model3D.Vector3D(-pillar_width/2, pillar_depth/2, pillarsheight)));
+            let pillars = new Model3D.Group('pillars');
+            let pillar_1 = new Model3D.Group('pillar_1').AddMesh(new Model3D.Mesh(pillar_geom, profile_material_model, 'pillar_1'))
+                                                        .Translation(new Model3D.Vector3D(projection-pillar_width/2 ,pillar_depth/2, 0));
+            let pillar_2 = new Model3D.Group('pillar_2').AddMesh(new Model3D.Mesh(pillar_geom, profile_material_model, 'pillar_2'))
+                                                        .Translation(new Model3D.Vector3D(projection-pillar_width/2, width - pillar_depth/2, 0));
+            pillars.AddGroup(pillar_1)
+                   .AddGroup(pillar_2);
+            let three_pillars = Model3D.ModelGroup2ThreeGroup(pillars);
+            
+            scene.add(three_pillars);
+            
+            /* === Calculate light and camera positions === */
+            camera.up = new THREE.Vector3(0,0,1);
+            controls.object.position.set(1.5*projection, -width/2, wallheight);
+            controls.target = new THREE.Vector3(0, width, 0);
+            scene.add( new THREE.AmbientLight( 0x777777 ) );
+            var light = new THREE.DirectionalLight( 0xffffff, 0.6 );
+            light.position.set(1.5*projection, -width/2, wallheight);
+            light.lookAt(0, width, 0);
+            scene.add( light );
+            
+            var animate = function () {
+                        requestAnimationFrame( animate );
+                        controls.update();
+                        renderer.render( scene, camera );
+                };
+
+            animate();
+            
+        </script>
+    </body>
+</html>
