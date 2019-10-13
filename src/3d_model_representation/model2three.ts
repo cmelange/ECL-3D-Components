@@ -8,22 +8,32 @@ export function csg2TreeGeometry(geometry: Geometry): THREE.BufferGeometry
     let triangles = geometry.geometry.toTriangles();
     let positions = [];
     let normals = [];
+    let uvs = [];
     for (let i=0; i<triangles.length; ++i)
     {
         let ax = triangles[i].vertices[0].pos.x;
         let ay = triangles[i].vertices[0].pos.y;
         let az = triangles[i].vertices[0].pos.z;
+        let au = triangles[i].vertices[0].uv.x;
+        let av = triangles[i].vertices[0].uv.y;
         positions.push(ax, ay, az);
+        uvs.push(au, av)
 
         let bx = triangles[i].vertices[1].pos.x;
         let by = triangles[i].vertices[1].pos.y;
         let bz = triangles[i].vertices[1].pos.z;
+        let bu = triangles[i].vertices[1].uv.x;
+        let bv = triangles[i].vertices[1].uv.y;
         positions.push(bx, by, bz);
+        uvs.push(bu, bv)
 
         let cx = triangles[i].vertices[2].pos.x;
         let cy = triangles[i].vertices[2].pos.y;
         let cz = triangles[i].vertices[2].pos.z;
+        let cu = triangles[i].vertices[2].uv.x;
+        let cv = triangles[i].vertices[2].uv.y;
         positions.push(cx, cy, cz);
+        uvs.push(cu, cv)
 
         let nx = triangles[i].plane.normal.x;
         let ny = triangles[i].plane.normal.y;
@@ -39,6 +49,7 @@ export function csg2TreeGeometry(geometry: Geometry): THREE.BufferGeometry
 
     three_geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ).onUpload( disposeArray ) );
     three_geometry.addAttribute( 'normal', new THREE.Float32BufferAttribute( normals, 3 ).onUpload( disposeArray ) );
+    three_geometry.addAttribute( 'uv', new THREE.Float32BufferAttribute( uvs, 2 ).onUpload( disposeArray ) );
 
     return three_geometry;
 }
