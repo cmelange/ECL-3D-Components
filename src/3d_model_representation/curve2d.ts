@@ -1,6 +1,7 @@
 import {RotationMatrix2D} from './math';
 import {Vector2D} from './vector2d';
 import {Shape} from './shape';
+import { PolygonShape } from './polygon_shape';
 
 export class Curve2D {
 
@@ -70,8 +71,8 @@ export class Curve2D {
         return this;
     }
 
-    Shape(): Shape {
-        return new Shape([this]);
+    Shape(): PolygonShape {
+        return new PolygonShape([this]);
     }
 
     Thicken(distance: number): Shape {

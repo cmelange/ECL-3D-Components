@@ -4,7 +4,7 @@
   "description": "Javascript library to facilitate the build and visualisation of 3D models",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run tsc && jest",
     "build": "npm run tsc && npm run clean && npm run browserify",
     "tsc": "tsc",
     "clean": "rm -rf build && mkdir build",
@@ -35,5 +35,14 @@
     "pngjs": "^3.4.0",
     "three": "^0.108.0",
     "uglify-js": "^3.6.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.19",
+    "jest": "^24.9.0"
+  },
+  "jest": {
+    "testMatch": [
+      "**/dist/test/**/*.js?(x)"
+    ]
   }
 }

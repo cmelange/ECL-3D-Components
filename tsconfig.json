@@ -2,13 +2,14 @@
     "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "outDir": "dist",
+    "outDir": "dist"
     },
     "files": [
         "index.ts"
     ],
     "include": [
         "src/**/*.ts",
+        "test/**/*.ts",
         "examples/**/*.ts"
     ],
     "exclude": [

@@ -4,15 +4,21 @@ import * as csg from '@jscad/csg';
 
 export class Geometry {
 
-    geometry;
+    geometry; //type csg.CSG
     name: string;
+    private constructionString: string;
 
-    constructor(geometry, name='geometry') {
+    constructor(geometry, constructionString: string = '', name: string ='geometry') {
         this.name = name;
         this.geometry = geometry;
+        this.constructionString = constructionString;
     }
 
-    Name(name: string) {
+    ConstructionString(): string {
+        return this.constructionString;
+    }
+
+    Name(name: string): Geometry {
         this.name = name;
         return this;
     }
@@ -27,8 +33,8 @@ export class Geometry {
         return this;
     }
 
-    Copy() {
-        return new Geometry(csg.clone(this.geometry));
+    Copy(): Geometry {
+        return new Geometry(csg.clone(this.geometry), this.name, this.constructionString);
     }
 
     /**
