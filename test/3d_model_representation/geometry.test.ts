@@ -65,5 +65,5 @@ test('geometry intersection constructionString test', () => {
     let extrudedGeometry = polygon.Extrude(1);
     let unionGeometry = extrudedGeometry.Intersection(extrudedGeometry);
     expect(unionGeometry.ConstructionString())
-        .toBe("POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1).INTERSECT(POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1))");
+        .toBe("POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1).INTERSECTION(POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1))");
 });

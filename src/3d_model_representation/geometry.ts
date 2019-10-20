@@ -71,7 +71,7 @@ export class Geometry {
 
     Intersection(geometry: Geometry): Geometry {
         this.constructionString = 
-            this.constructionString + ".INTERSECT(" + geometry.ConstructionString() + ")";
+            this.constructionString + ".INTERSECTION(" + geometry.ConstructionString() + ")";
         this.geometry = this.geometry.intersect(geometry.geometry);
         return this;
     }

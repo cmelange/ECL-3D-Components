@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import * as fs from 'fs';
-import { renderThreeSceneToPdf } from '../src/render_three';
+import { renderThreeSceneToPdf as renderThreeSceneToPng } from '../src/render_three';
 
 //--Renderer
 let renderWidth = 800;
@@ -47,5 +47,5 @@ scene.add(octa);
 
 //--Save to file
 var stream = fs.createWriteStream('./test1.png');
-renderThreeSceneToPdf(scene, camera, renderWidth, renderHeight).pipe(stream);
+renderThreeSceneToPng(scene, camera, renderWidth, renderHeight).pipe(stream);
 stream.on('close', () =>  console.log('The PNG file was created.'));
