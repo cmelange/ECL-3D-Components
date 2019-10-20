@@ -24,12 +24,16 @@ export class Geometry {
     }
 
     Translate(vector: Vector3D): Geometry {
-        this.geometry = csg.translate(vector.vector, this.geometry);
+        this.constructionString = 
+            this.constructionString + ".TRANSLATION(" + JSON.stringify(vector.vector) + ")";
+        this.geometry.translate(vector.vector);
         return this;
     }
 
     Rotate(rotation: number[]): Geometry {
-        this.geometry = csg.rotate(rotation, this.geometry);
+        this.constructionString = 
+            this.constructionString + ".ROTATION(" + JSON.stringify(rotation) + ")";
+        this.geometry.rotate(rotation);
         return this;
     }
 
@@ -44,21 +48,30 @@ export class Geometry {
      * @returns {Geometry}
      */
     ClipByPlane(plane: Plane): Geometry {
+        this.constructionString = 
+            this.constructionString + ".CLIP_BY_PLANE([" + plane.plane.normal.x + "," +
+                plane.plane.normal.y + "," + plane.plane.normal.z + "]," + plane.plane.w + ")";
         this.geometry = this.geometry.cutByPlane(plane.plane);
         return this;
     }
 
     Union(geometry: Geometry): Geometry {
+        this.constructionString = 
+            this.constructionString + ".UNION(" + geometry.ConstructionString() + ")";
         this.geometry = this.geometry.union(geometry.geometry);
         return this;
     }
 
     Difference(geometry: Geometry): Geometry {
+        this.constructionString = 
+            this.constructionString + ".DIFFERENCE(" + geometry.ConstructionString() + ")";
         this.geometry = this.geometry.subtract(geometry.geometry);
         return this;
     }
 
     Intersection(geometry: Geometry): Geometry {
+        this.constructionString = 
+            this.constructionString + ".INTERSECT(" + geometry.ConstructionString() + ")";
         this.geometry = this.geometry.intersect(geometry.geometry);
         return this;
     }
