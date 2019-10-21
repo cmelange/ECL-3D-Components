@@ -1,4 +1,4 @@
-import {toDegrees, toRadians, RotationMatrix2D} from './math';
+import {toDegrees, toRadians, rotationMatrix2D} from './math';
 
 export class Vector2D {
 
@@ -8,7 +8,7 @@ export class Vector2D {
         this.vector = [x,y];
     }
 
-    Translate(vector: Vector2D, mult: number=1): Vector2D {
+    translate(vector: Vector2D, mult: number=1): Vector2D {
         for (let i=0; i<2; i++)
         {
             this.vector[i] += vector[i]*mult;
@@ -16,7 +16,7 @@ export class Vector2D {
         return this;
     }
 
-    Multiply(mult: number): Vector2D {
+    multiply(mult: number): Vector2D {
         for (let i=0; i<2; i++)
         {
             this.vector[i] *= mult;
@@ -24,7 +24,7 @@ export class Vector2D {
         return this;
     }
 
-    ApplyMatrix_(matrix: number[][]): void {
+    applyMatrix_(matrix: number[][]): void {
         let new_vector = [0,0];
         for (let i=0; i<2; i++)
         {
@@ -36,22 +36,22 @@ export class Vector2D {
         this.vector = new_vector;
     }
 
-    Rotate(rotation: number): Vector2D {
-        let rotation_matrix = RotationMatrix2D(rotation);
-        this.ApplyMatrix_(rotation_matrix);
+    rotate(rotation: number): Vector2D {
+        let rotation_matrix = rotationMatrix2D(rotation);
+        this.applyMatrix_(rotation_matrix);
         return this;
     }
 
-    Copy(): Vector2D {
+    copy(): Vector2D {
         return new Vector2D(this.vector[0], this.vector[1]);
     }
 
-    Length(): number {
+    length(): number {
         return Math.sqrt( Math.pow(this.vector[0], 2) + Math.pow(this.vector[1], 2) );
     }
 
-    DistanceTo(vector: Vector2D): number {
-        return new Vector2D(vector[0] - this.vector[0], vector[1] - this.vector[1]).Length();
+    distanceTo(vector: Vector2D): number {
+        return new Vector2D(vector[0] - this.vector[0], vector[1] - this.vector[1]).length();
     }
 
     /**
@@ -59,7 +59,7 @@ export class Vector2D {
      * 
      * @returns {number}    angle between the vector and the x-axis in degrees
      */
-    Angle(): number {
+    angle(): number {
         return toDegrees(Math.atan2(this.vector[1], this.vector[2]));
     }
 

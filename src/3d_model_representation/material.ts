@@ -18,7 +18,7 @@ export class Material
         this.name = name;
     }
 
-    Name(name: string): Material
+    withName(name: string): Material
     {
         this.name = name;
         return this;
@@ -32,7 +32,7 @@ export class Material
      * @param {[number, number, number, number]} baseColor
      * @returns {Material}
      */
-    BaseColor(baseColor: [number, number, number, number]): Material
+    withBaseColor(baseColor: [number, number, number, number]): Material
     {
         this.baseColor = baseColor;
         return this;
@@ -46,7 +46,7 @@ export class Material
      * @param {TextureMap} baseColorTexture
      * @returns {Material}
      */
-    BaseColorTexture(baseColorTexture: TextureMap): Material
+    withBaseColorTexture(baseColorTexture: TextureMap): Material
     {
         this.baseColorTexture = baseColorTexture;
         return this;
@@ -62,7 +62,7 @@ export class Material
      * @param {number} metallic
      * @returns {Material}
      */
-    Metallic(metallic: number): Material
+    withMetallic(metallic: number): Material
     {
         this.metallic = metallic;
         return this;
@@ -77,7 +77,7 @@ export class Material
      * @param {number} roughness
      * @returns {Material}
      */
-    Roughness(roughness: number): Material
+    withRoughness(roughness: number): Material
     {
         this.roughness = roughness;
         return this;
@@ -91,7 +91,7 @@ export class Material
      * @param {TextureMap} metalRoughnessTexture
      * @returns {Material}
      */
-    MetalRoughnessTexture(metalRoughnessTexture: TextureMap): Material
+    withMetalRoughnessTexture(metalRoughnessTexture: TextureMap): Material
     {
         this.metalRoughnessTexture = metalRoughnessTexture;
         return this;
@@ -107,7 +107,7 @@ export class Material
      * @param {TextureMap} normalTexture
      * @returns {Material}
      */
-    NormalTexture(normalTexture: TextureMap): Material
+    withNormalTexture(normalTexture: TextureMap): Material
     {
         this.normalTexture = normalTexture;
         return this;
@@ -122,7 +122,7 @@ export class Material
      * @param {TextureMap} occlusionTexture
      * @returns {Material}
      */
-    OcclusionTexture(occlusionTexture: TextureMap): Material
+    withOcclusionTexture(occlusionTexture: TextureMap): Material
     {
         this.occlusionTexture = occlusionTexture;
         return this;
@@ -135,7 +135,7 @@ export class Material
      * @param {[number, number, number]} emissive
      * @returns {Material}
      */
-    Emissive(emissive: [number, number, number]): Material
+    withEmissive(emissive: [number, number, number]): Material
     {
         this.emissive = emissive;
         return this;
@@ -149,7 +149,7 @@ export class Material
      * @param {TextureMap} emissiveTexture
      * @returns {Material}
      */    
-    EmissiveTexture(emissiveTexture: TextureMap): Material
+    withEmissiveTexture(emissiveTexture: TextureMap): Material
     {
         this.emissiveTexture = emissiveTexture;
         return this;

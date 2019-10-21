@@ -14,19 +14,19 @@ export class Mesh
         this.name = name;
     }
 
-    Name(name: string): Mesh
+    withName(name: string): Mesh
     {
         this.name = name;
         return this;
     }
 
-    Geometry(geometry: Geometry): Mesh
+    withGeometry(geometry: Geometry): Mesh
     {
         this.geometry = geometry;
         return this;
     }
 
-    Material(material: Material): Mesh
+    withMaterial(material: Material): Mesh
     {
         this.material = material;
         return this;

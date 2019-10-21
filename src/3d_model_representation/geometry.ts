@@ -6,39 +6,39 @@ export class Geometry {
 
     geometry; //type csg.CSG
     name: string;
-    private constructionString: string;
+    private _constructionString: string;
 
     constructor(geometry, constructionString: string = '', name: string ='geometry') {
         this.name = name;
         this.geometry = geometry;
-        this.constructionString = constructionString;
+        this._constructionString = constructionString;
     }
 
-    ConstructionString(): string {
-        return this.constructionString;
+    get constructionString(): string {
+        return this._constructionString;
     }
 
-    Name(name: string): Geometry {
+    withName(name: string): Geometry {
         this.name = name;
         return this;
     }
 
-    Translate(vector: Vector3D): Geometry {
-        this.constructionString = 
-            this.constructionString + ".TRANSLATION(" + JSON.stringify(vector.vector) + ")";
+    translate(vector: Vector3D): Geometry {
+        this._constructionString = 
+            this._constructionString + ".TRANSLATION(" + JSON.stringify(vector.vector) + ")";
         this.geometry.translate(vector.vector);
         return this;
     }
 
-    Rotate(rotation: number[]): Geometry {
-        this.constructionString = 
-            this.constructionString + ".ROTATION(" + JSON.stringify(rotation) + ")";
+    rotate(rotation: number[]): Geometry {
+        this._constructionString = 
+            this._constructionString + ".ROTATION(" + JSON.stringify(rotation) + ")";
         this.geometry.rotate(rotation);
         return this;
     }
 
-    Copy(): Geometry {
-        return new Geometry(csg.clone(this.geometry), this.name, this.constructionString);
+    copy(): Geometry {
+        return new Geometry(csg.clone(this.geometry), this.name, this._constructionString);
     }
 
     /**
@@ -47,31 +47,31 @@ export class Geometry {
      * @param {Plane} plane plane to cut the geometry
      * @returns {Geometry}
      */
-    ClipByPlane(plane: Plane): Geometry {
-        this.constructionString = 
-            this.constructionString + ".CLIP_BY_PLANE([" + plane.plane.normal.x + "," +
+    clipByPlane(plane: Plane): Geometry {
+        this._constructionString = 
+            this._constructionString + ".CLIP_BY_PLANE([" + plane.plane.normal.x + "," +
                 plane.plane.normal.y + "," + plane.plane.normal.z + "]," + plane.plane.w + ")";
         this.geometry = this.geometry.cutByPlane(plane.plane);
         return this;
     }
 
-    Union(geometry: Geometry): Geometry {
-        this.constructionString = 
-            this.constructionString + ".UNION(" + geometry.ConstructionString() + ")";
+    union(geometry: Geometry): Geometry {
+        this._constructionString = 
+            this._constructionString + ".UNION(" + geometry.constructionString + ")";
         this.geometry = this.geometry.union(geometry.geometry);
         return this;
     }
 
-    Difference(geometry: Geometry): Geometry {
-        this.constructionString = 
-            this.constructionString + ".DIFFERENCE(" + geometry.ConstructionString() + ")";
+    difference(geometry: Geometry): Geometry {
+        this._constructionString = 
+            this._constructionString + ".DIFFERENCE(" + geometry.constructionString + ")";
         this.geometry = this.geometry.subtract(geometry.geometry);
         return this;
     }
 
-    Intersection(geometry: Geometry): Geometry {
-        this.constructionString = 
-            this.constructionString + ".INTERSECTION(" + geometry.ConstructionString() + ")";
+    intersection(geometry: Geometry): Geometry {
+        this._constructionString = 
+            this._constructionString + ".INTERSECTION(" + geometry.constructionString + ")";
         this.geometry = this.geometry.intersect(geometry.geometry);
         return this;
     }

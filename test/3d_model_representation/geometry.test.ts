@@ -9,8 +9,8 @@ test('translated geometry constructionString test', () => {
                                                  new Vector2D(0,1),
                                                  new Vector2D(1,1),
                                                  new Vector2D(1,0)])]);
-    let translatedGeometry = polygon.Extrude(1).Translate(new Vector3D(1,2,1));
-    expect(translatedGeometry.ConstructionString())
+    let translatedGeometry = polygon.extrude(1).translate(new Vector3D(1,2,1));
+    expect(translatedGeometry.constructionString)
         .toBe("POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1).TRANSLATION([1,2,1])");
 });
 
@@ -19,8 +19,8 @@ test('rotated geometry constructionString test', () => {
                                                  new Vector2D(0,1),
                                                  new Vector2D(1,1),
                                                  new Vector2D(1,0)])]);
-    let rotatedGeometry = polygon.Extrude(1).Rotate([45,90,45]);
-    expect(rotatedGeometry.ConstructionString())
+    let rotatedGeometry = polygon.extrude(1).rotate([45,90,45]);
+    expect(rotatedGeometry.constructionString)
         .toBe("POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1).ROTATION([45,90,45])");
 });
 
@@ -29,9 +29,9 @@ test('geometry cut by plane constructionString test', () => {
                                                  new Vector2D(0,1),
                                                  new Vector2D(1,1),
                                                  new Vector2D(1,0)])]);
-    let cutGeometry = polygon.Extrude(1).ClipByPlane(new Plane(new Vector3D(0,1,0),
+    let cutGeometry = polygon.extrude(1).clipByPlane(new Plane(new Vector3D(0,1,0),
                                                                    new Vector3D(0,0,0)));
-    expect(cutGeometry.ConstructionString())
+    expect(cutGeometry.constructionString)
         .toBe("POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1).CLIP_BY_PLANE([0,1,0],0)");
 });
 
@@ -40,9 +40,9 @@ test('geometry union constructionString test', () => {
                                                  new Vector2D(0,1),
                                                  new Vector2D(1,1),
                                                  new Vector2D(1,0)])]);
-    let extrudedGeometry = polygon.Extrude(1);
-    let unionGeometry = extrudedGeometry.Union(extrudedGeometry);
-    expect(unionGeometry.ConstructionString())
+    let extrudedGeometry = polygon.extrude(1);
+    let unionGeometry = extrudedGeometry.union(extrudedGeometry);
+    expect(unionGeometry.constructionString)
         .toBe("POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1).UNION(POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1))");
 });
 
@@ -51,9 +51,9 @@ test('geometry difference constructionString test', () => {
                                                  new Vector2D(0,1),
                                                  new Vector2D(1,1),
                                                  new Vector2D(1,0)])]);
-    let extrudedGeometry = polygon.Extrude(1);
-    let unionGeometry = extrudedGeometry.Difference(extrudedGeometry);
-    expect(unionGeometry.ConstructionString())
+    let extrudedGeometry = polygon.extrude(1);
+    let unionGeometry = extrudedGeometry.difference(extrudedGeometry);
+    expect(unionGeometry.constructionString)
         .toBe("POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1).DIFFERENCE(POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1))");
 });
 
@@ -62,8 +62,8 @@ test('geometry intersection constructionString test', () => {
                                                  new Vector2D(0,1),
                                                  new Vector2D(1,1),
                                                  new Vector2D(1,0)])]);
-    let extrudedGeometry = polygon.Extrude(1);
-    let unionGeometry = extrudedGeometry.Intersection(extrudedGeometry);
-    expect(unionGeometry.ConstructionString())
+    let extrudedGeometry = polygon.extrude(1);
+    let unionGeometry = extrudedGeometry.intersection(extrudedGeometry);
+    expect(unionGeometry.constructionString)
         .toBe("POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1).INTERSECTION(POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]]]).EXTRUDE(1))");
 });

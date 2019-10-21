@@ -20,49 +20,49 @@ export class Group
         this.scale = [1,1,1];
     }
 
-    Name(name: string): Group
+    withName(name: string): Group
     {
         this.name = name;
         return this;
     }
 
-    AddMesh(mesh: Mesh): Group
+    addMesh(mesh: Mesh): Group
     {
         this.meshes.set(mesh.name, mesh);
         return this;
     }
 
-    RemoveMesh(name: string): Group
+    removeMesh(name: string): Group
     {
         this.meshes.delete(name);
         return this;
     }
 
-    Translation(vector: Vector3D): Group
+    withTranslation(vector: Vector3D): Group
     {
         this.translation = vector;
         return this;
     }
 
-    Rotation(rotation: [number, number, number]): Group
+    withRotation(rotation: [number, number, number]): Group
     {
         this.rotation = rotation;
         return this;
     }
 
-    Scale(scale: [number, number, number]): Group
+    withScale(scale: [number, number, number]): Group
     {
         this.scale = scale;
         return this;
     }
 
-    AddGroup(group: Group): Group
+    addGroup(group: Group): Group
     {
         this.children.set(group.name, group);
         return this;
     }
 
-    RemoveGroup(name: string): Group
+    removeGroup(name: string): Group
     {
         this.children.delete(name);
         return this;

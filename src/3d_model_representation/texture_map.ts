@@ -25,49 +25,49 @@ export class TextureMap
     rotation: number;
     scale: [number, number];
 
-    Image(image: Image): TextureMap
+    WithImage(image: Image): TextureMap
     {
         this.image = image;
         return this;
     }
 
-    MagFilter(filterType: FilterType): TextureMap
+    withMagFilter(filterType: FilterType): TextureMap
     {
         this.magFilter = filterType;
         return this;
     }
 
-    MinFilter(filterType: FilterType): TextureMap
+    withMinFilter(filterType: FilterType): TextureMap
     {
         this.minFilter = filterType;
         return this;
     }
 
-    WrapS(wrapMethod: WrapMethod): TextureMap
+    withWrapS(wrapMethod: WrapMethod): TextureMap
     {
         this.wrapS = wrapMethod;
         return this;
     }
 
-    WrapT(wrapMethod: WrapMethod): TextureMap
+    withWrapT(wrapMethod: WrapMethod): TextureMap
     {
         this.wrapT = wrapMethod;
         return this;
     }
 
-    Offset(offset: [number, number]): TextureMap
+    withOffset(offset: [number, number]): TextureMap
     {
         this.offset = offset;
         return this;
     }
 
-    Rotation(angle: number): TextureMap
+    withRotation(angle: number): TextureMap
     {
         this.rotation = angle;
         return this;
     }
 
-    Scale(scale: [number, number]): TextureMap
+    withScale(scale: [number, number]): TextureMap
     {
         this.scale = scale;
         return this;

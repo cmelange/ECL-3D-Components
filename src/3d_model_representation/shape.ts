@@ -5,13 +5,13 @@ import * as csg from '@jscad/csg';
 
 export interface Shape {
  
-    Translate(vector: Vector2D): Shape;
+    translate(vector: Vector2D): Shape;
 
-    Rotate(rotation: number): Shape;
+    rotate(rotation: number): Shape;
 
-    Copy(): Shape;
+    copy(): Shape;
 
-    ToCsgCag_();
+    toCsgCag_();
 
     /**
      * Linearly extrudes the shape along de z-axis
@@ -19,7 +19,7 @@ export interface Shape {
      * @param {number} height extrusion height
      * @returns {Geometry}
      */
-    Extrude(height: number): Geometry;
+    extrude(height: number): Geometry;
 
     /**
      * Revolves the shape around the y-axis
@@ -28,6 +28,6 @@ export interface Shape {
      * @param {number} resolution number of polygons per 360 degree revolution
      * @returns {Geometry}
      */
-    Revolve(angle: number, resolution: number): Geometry;
+    revolve(angle: number, resolution: number): Geometry;
 
 }

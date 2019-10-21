@@ -53,25 +53,25 @@
             var tubes_total_number = Math.ceil((last_tube_x - first_tube_x) / 600) + 1 + add_on_intermediate_support_tube;
             var tube_distance = (last_tube_x - first_tube_x) / (tubes_total_number - 1);
 
-            var profile_material_model = new Model3D.Material('profile_material').Roughness(0.25)
-                                                                                 .Metallic(0);
+            var profile_material_model = new Model3D.Material('profile_material').withRoughness(0.25)
+                                                                                 .withMetallic(0);
             var profile_material = new THREE.MeshPhongMaterial( { color: 0xfffDF0} );
             var cloth_material = new THREE.MeshLambertMaterial( { color: 0xff0000} );
             
             /* === Calculate geometry======================= */
             //--pillars
-            var pillar_geom = (new Model3D.Rectangle(pillar_width, pillar_depth))
-                                          .Extrude(pillarsheight + pillar_width*Math.tan((180-90-inclination_angle_roof)*Math.PI/180/2))
-                                          .ClipByPlane(new Model3D.Plane(new Model3D.Vector3D(0,0,1).Rotate([0,(inclination_angle_roof-90)/2,0]),
+            var pillar_geom = (new Model3D.rectangle(pillar_width, pillar_depth))
+                                          .extrude(pillarsheight + pillar_width*Math.tan((180-90-inclination_angle_roof)*Math.PI/180/2))
+                                          .clipByPlane(new Model3D.Plane(new Model3D.Vector3D(0,0,1).rotate([0,(inclination_angle_roof-90)/2,0]),
                                                                          new Model3D.Vector3D(-pillar_width/2, pillar_depth/2, pillarsheight)));
             let pillars = new Model3D.Group('pillars');
-            let pillar_1 = new Model3D.Group('pillar_1').AddMesh(new Model3D.Mesh(pillar_geom, profile_material_model, 'pillar_1'))
-                                                        .Translation(new Model3D.Vector3D(projection-pillar_width/2 ,pillar_depth/2, 0));
-            let pillar_2 = new Model3D.Group('pillar_2').AddMesh(new Model3D.Mesh(pillar_geom, profile_material_model, 'pillar_2'))
-                                                        .Translation(new Model3D.Vector3D(projection-pillar_width/2, width - pillar_depth/2, 0));
-            pillars.AddGroup(pillar_1)
-                   .AddGroup(pillar_2);
-            let three_pillars = Model3D.ModelGroup2ThreeGroup(pillars);
+            let pillar_1 = new Model3D.Group('pillar_1').addMesh(new Model3D.Mesh(pillar_geom, profile_material_model, 'pillar_1'))
+                                                        .withTranslation(new Model3D.Vector3D(projection-pillar_width/2 ,pillar_depth/2, 0));
+            let pillar_2 = new Model3D.Group('pillar_2').addMesh(new Model3D.Mesh(pillar_geom, profile_material_model, 'pillar_2'))
+                                                        .withTranslation(new Model3D.Vector3D(projection-pillar_width/2, width - pillar_depth/2, 0));
+            pillars.addGroup(pillar_1)
+                   .addGroup(pillar_2);
+            let three_pillars = Model3D.modelGroup2ThreeGroup(pillars);
             
             scene.add(three_pillars);
             

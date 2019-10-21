@@ -1,4 +1,4 @@
-import {RotationMatrix2D} from './math';
+import {rotationMatrix2D} from './math';
 import {Vector2D} from './vector2d';
 import {Shape} from './shape';
 import { PolygonShape } from './polygon_shape';
@@ -10,79 +10,79 @@ export class Curve2D {
     constructor(vectors: Vector2D[]) {
         this.path = [];
         if (typeof vectors !== 'undefined') {
-            this.AppendArray(vectors);
+            this.appendArray(vectors);
         };
     }
 
-    Translate(vector: Vector2D): Curve2D {
+    translate(vector: Vector2D): Curve2D {
         for (var i=0; i<this.path.length; ++i) {
-            this.path[i].Translate(vector);
+            this.path[i].translate(vector);
         };
         return this;
     }
 
-    Rotate(rotation: number): Curve2D {
-        let rotation_matrix = RotationMatrix2D(rotation);
+    rotate(rotation: number): Curve2D {
+        let rotation_matrix = rotationMatrix2D(rotation);
         for (var i=0; i<this.path.length; ++i) {
-            this.path[i].ApplyMatrix_(rotation_matrix);
+            this.path[i].applyMatrix_(rotation_matrix);
         };
         return this;
     }
 
-    Copy():Curve2D {
+    copy():Curve2D {
         var copyArray = [];
         for (var i=0; i<this.path.length; ++i) {
-            copyArray.push(this.path[i].Copy());
+            copyArray.push(this.path[i].copy());
         };
         return new Curve2D(copyArray);
     }
 
-    Length(): number {
+    length(): number {
         var length = 0;
         for (var i=0; i<this.path.length-1; ++i) {
-            length = length + this.path[i].DistanceTo(this.path[i+1]);
+            length = length + this.path[i].distanceTo(this.path[i+1]);
         };
         return length;
     }
 
-    AppendArray(vectorArray: Vector2D[]): Curve2D {
+    appendArray(vectorArray: Vector2D[]): Curve2D {
         for (var i=0; i<vectorArray.length; ++i) {
             if ((i===0) && (this.path.length > 0)) {
-                if (this.path[this.path.length-1].Copy().Translate(vectorArray[0], -1).Length() < 1) {
+                if (this.path[this.path.length-1].copy().translate(vectorArray[0], -1).length() < 1) {
                     continue;
                 };
             };
-            this.path.push(vectorArray[i].Copy());
+            this.path.push(vectorArray[i].copy());
         }
         return this;
     }
 
-    Append(curve: Curve2D): Curve2D {
-        this.AppendArray(curve.path);
+    append(curve: Curve2D): Curve2D {
+        this.appendArray(curve.path);
         return this;
     }
 
-    Repeat(num: number): Curve2D {
-        var singleCurve = this.Copy();
-        var translationVector = singleCurve.path[singleCurve.path.length-1].Copy();
+    repeat(num: number): Curve2D {
+        var singleCurve = this.copy();
+        var translationVector = singleCurve.path[singleCurve.path.length-1].copy();
         for (var i=1; i<num; ++i) {
-            this.Append(singleCurve.Translate(translationVector));
+            this.append(singleCurve.translate(translationVector));
         };
         return this;
     }
 
-    Shape(): PolygonShape {
+    shape(): PolygonShape {
         return new PolygonShape([this]);
     }
 
-    Thicken(distance: number): Shape {
+    thicken(distance: number): Shape {
         var vectorArray = [];
         for(var i=this.path.length-1; i>=0; --i) {
             var tangentIndex = (i === 0) ? 1 : i;
-            var translationVector = this.path[tangentIndex].Copy().Translate(this.path[tangentIndex-1], -1).Rotate(90);
-            translationVector.Multiply(distance/translationVector.Length());
-            vectorArray.push(this.path[i].Copy().Translate(translationVector));
+            var translationVector = this.path[tangentIndex].copy().translate(this.path[tangentIndex-1], -1).rotate(90);
+            translationVector.multiply(distance/translationVector.length());
+            vectorArray.push(this.path[i].copy().translate(translationVector));
         };
-        return this.Copy().Append(new Curve2D(vectorArray)).Shape();
+        return this.copy().append(new Curve2D(vectorArray)).shape();
     }
 }

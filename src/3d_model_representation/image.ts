@@ -8,13 +8,13 @@ export class Image
         this.name = name;
     }
 
-    Name(name: string): Image
+    withName(name: string): Image
     {
         this.name = name;
         return this;
     }
 
-    Image(uri: string): Image
+    withImage(uri: string): Image
     {
         this.image = uri;
         return this;

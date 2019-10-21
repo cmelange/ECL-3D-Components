@@ -3,13 +3,13 @@ import {Vector2D} from './vector2d';
 import {Curve2D} from './curve2d';
 import {Shape} from './shape';
 
-export function TangentPointToCircle(point, center, radius, direction=true): Vector2D {
+export function tangentPointToCircle(point, center, radius, direction=true): Vector2D {
     let dir = (direction) ? 1 : -1;
     let tangent_angle = dir * Math.asin(radius/point.DistanceTo(center));
     return point.Copy().Add(center.Copy().Add(point,-1).Rotate(tangent_angle).Multiply(Math.cos(tangent_angle)));
 }
 
-export function CircleLine(radius: number,
+export function circleLine(radius: number,
                            center: Vector2D, 
                            angle: number[],
                            numPoints: number=10): Curve2D {
@@ -18,29 +18,29 @@ export function CircleLine(radius: number,
     for (let i=0; i<numPoints; ++i) {
         circlePath.push(new Vector2D(radius * Math.cos(toRadians(angle[0] + i*angleDistance)),
                             radius * Math.sin(toRadians(angle[0] + i*angleDistance)))
-                                    .Translate(center));
+                                    .translate(center));
     };
     return new Curve2D(circlePath);
 };
 
-export function Circle(radius: number,
+export function circle(radius: number,
                        center: Vector2D = new Vector2D(0,0),
                        numPoints: number=10): Shape
 {
-    return CircleLine(radius, center, [0, 360], numPoints).Shape();
+    return circleLine(radius, center, [0, 360], numPoints).shape();
 }
 
-export function Rectangle(width: number,
+export function rectangle(width: number,
                           height: number,
                           center: Vector2D = new Vector2D(0,0) ): Shape
 {
     return new Curve2D([new Vector2D(-width/2, -height/2),
                         new Vector2D(-width/2,  height/2),
                         new Vector2D( width/2,  height/2),
-                        new Vector2D( width/2, -height/2)]).Shape();
+                        new Vector2D( width/2, -height/2)]).shape();
 }
 
-export function Parabola(points: Vector2D[],
+export function parabola(points: Vector2D[],
                          extremum: number,
                          numPoints: number=10,
                          iterations:number=15): Curve2D {
@@ -67,7 +67,7 @@ export function Parabola(points: Vector2D[],
     let calcStep = (x2-x1) / (numPoints-1);
     let translation = new Vector2D(points[0].vector[0] - x1, extremum);
     for (let i=0; i<numPoints; ++i) {
-        parabolaPath.push(new Vector2D(currentX , A*Math.pow(currentX,2)).Translate(translation));
+        parabolaPath.push(new Vector2D(currentX , A*Math.pow(currentX,2)).translate(translation));
         currentX = currentX + calcStep;
     }
     return new Curve2D(parabolaPath);

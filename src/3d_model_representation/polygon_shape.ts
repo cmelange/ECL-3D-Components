@@ -12,29 +12,29 @@ export class PolygonShape implements Shape {
         this.paths = [];
         for (let i=0; i < paths.length; ++i)
         {
-            this.paths.push(paths[i].Copy())
+            this.paths.push(paths[i].copy())
         }
     }
     
-    Translate(vector: Vector2D): PolygonShape {
+    translate(vector: Vector2D): PolygonShape {
         for (var i=0; i<this.paths.length; ++i) {
-            this.paths[i].Translate(vector);
+            this.paths[i].translate(vector);
         };
         return this;
     }
 
-    Rotate(rotation: number): PolygonShape {
+    rotate(rotation: number): PolygonShape {
         for (var i=0; i<this.paths.length; ++i) {
-            this.paths[i].Rotate(rotation);
+            this.paths[i].rotate(rotation);
         };
         return this;
     }
 
-    Copy(): PolygonShape {
+    copy(): PolygonShape {
         return new PolygonShape(this.paths);
     }
 
-    ToCsgCag_() {
+    toCsgCag_() {
         let points: number[][][] = [];
         for (let i=0; i < this.paths.length; ++i)
         {
@@ -49,9 +49,9 @@ export class PolygonShape implements Shape {
      * @param {number} height extrusion height
      * @returns {Geometry}
      */
-    Extrude(height: number): Geometry {
+    extrude(height: number): Geometry {
         let constructionString: string = this.CreatePolygonConstructionString_() + ".EXTRUDE(" + height + ")";
-        return new Geometry(this.ToCsgCag_().extrude({offset: [0,0,height], twiststeps: 1, twistangle: 0}),
+        return new Geometry(this.toCsgCag_().extrude({offset: [0,0,height], twiststeps: 1, twistangle: 0}),
                             constructionString);
     }
 
@@ -62,9 +62,9 @@ export class PolygonShape implements Shape {
      * @param {number} resolution number of polygons per 360 degree revolution
      * @returns {Geometry}
      */
-    Revolve(angle: number, resolution: number =12): Geometry {
+    revolve(angle: number, resolution: number =12): Geometry {
         let constructionString: string = this.CreatePolygonConstructionString_() + ".REVOLVE(" + angle + "," + resolution + ")";
-        return new Geometry(this.ToCsgCag_().rotateExtrude({angle: angle, resolution: resolution}),
+        return new Geometry(this.toCsgCag_().rotateExtrude({angle: angle, resolution: resolution}),
                             constructionString);
     }
 

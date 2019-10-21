@@ -54,7 +54,7 @@ export function csg2TreeGeometry(geometry: Geometry): THREE.BufferGeometry
     return three_geometry;
 }
 
-export function ModelMaterial2ThreeMaterial(material: Material): THREE.MeshStandardMaterial
+export function modelMaterial2ThreeMaterial(material: Material): THREE.MeshStandardMaterial
 {
     let three_parameters =
     {
@@ -70,24 +70,24 @@ export function ModelMaterial2ThreeMaterial(material: Material): THREE.MeshStand
     return three_material;
 }
 
-export function ModelMesh2ThreeMesh(mesh: Mesh)
+export function modelMesh2ThreeMesh(mesh: Mesh)
 {
-    let three_material = ModelMaterial2ThreeMaterial(mesh.material);
+    let three_material = modelMaterial2ThreeMaterial(mesh.material);
     let three_geometry = csg2TreeGeometry(mesh.geometry);
     let three_mesh = new THREE.Mesh(three_geometry, three_material);
     three_mesh.name = mesh.name;
     return three_mesh;
 }
 
-export function ModelGroup2ThreeGroup(group: Group): THREE.Group
+export function modelGroup2ThreeGroup(group: Group): THREE.Group
 {
     let three_group = new THREE.Group();
     three_group.name = group.name;
     group.meshes.forEach((mesh: Mesh, key: string) => {
-        three_group.add(ModelMesh2ThreeMesh(mesh));
+        three_group.add(modelMesh2ThreeMesh(mesh));
     });
     group.children.forEach((group: Group, key: string) => {
-        three_group.add(ModelGroup2ThreeGroup(group));
+        three_group.add(modelGroup2ThreeGroup(group));
     });
     let scale_matrix = new THREE.Matrix4().makeScale(group.scale[0],
                                                      group.scale[1],

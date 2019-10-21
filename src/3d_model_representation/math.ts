@@ -8,14 +8,14 @@ export function toDegrees(radian: number): number
     return radian/Math.PI*180;
 }
 
-export function RotationMatrix2D(rotation: number): number [][]
+export function rotationMatrix2D(rotation: number): number [][]
 {
     let theta = toRadians(rotation);
     return [[Math.cos(theta), -Math.sin(theta)],
             [Math.sin(theta), Math.cos(theta)]];
 }
 
-export function RotationMatrix3D(rotation: number[]): number[][]
+export function rotationMatrix3D(rotation: number[]): number[][]
 {
     let theta = [toRadians(rotation[0]), toRadians(rotation[1]), toRadians(rotation[2])];
 
