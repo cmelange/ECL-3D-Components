@@ -12,11 +12,13 @@ Every [**Geometry**](https://github.com/cmelange/ECL-3D-Components/blob/master/s
     * **EXTRUDE**(height)
     * **REVOLVE**(angle,resolution)
 * 3D constructs
+    * **PLANE**(normal, w)
     * **TRANSLATION**([x,y,z])
     * **ROTATION**([&theta;<sub>x</sub>, &theta;<sub>y</sub>, &theta;<sub>z</sub>])
     * **UNION**(geometry)
     * **DIFFERENCE**(geometry)
     * **INTERSECTION**(geometry)
+    * **CLIP_BY_PLANE**(plane)
 
 ## render three.js scene
 
