@@ -17,6 +17,31 @@ export class Product
     @JsonProperty()
     public description: string = '';
 
-    @JsonProperty()
+    @JsonProperty({ type: Representation })
     public representations: Representation[] = [];
+
+    public withType(type: ProductType): Product {
+        this.type = type;
+        return this;
+    }
+
+    public withName(name: string): Product {
+        this.name = name;
+        return this;
+    }
+
+    public withDescription(description: string): Product {
+        this.description = description;
+        return this;
+    }
+
+    public addRepresentation(representation: Representation): Product {
+        this.representations.push(representation);
+        return this;
+    }
+
+    public addRepresentations(representations: Representation[]): Product {
+        this.representations.concat(representations);
+        return this;
+    }
 }

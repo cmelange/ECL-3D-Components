@@ -8,4 +8,14 @@ export class Project
 
     @JsonProperty()
     public description: string = '';
+
+    public withName(name: string): Project {
+        this.name = name;
+        return this;
+    }
+
+    public withDescription(description: string): Project {
+        this.description = description;
+        return this;
+    }
 }

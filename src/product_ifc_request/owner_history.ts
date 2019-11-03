@@ -6,12 +6,12 @@ import { Application } from './application';
 @Serializable()
 export class OwnerHistory
 {
-    @JsonProperty()
+    @JsonProperty({ type: Person })
     public person: Person = new Person();
 
-    @JsonProperty()
+    @JsonProperty({ type: Organization })
     public organization: Organization = new Organization();
 
-    @JsonProperty()
+    @JsonProperty({ type: Application })
     public application: Application = new Application();
 }

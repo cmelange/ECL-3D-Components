@@ -11,4 +11,19 @@ export class Person
 
     @JsonProperty()
     public identifier: string = '';
+
+    public withGivenName(givenName: string): Person {
+        this.givenName = givenName;
+        return this;
+    }
+
+    public withFamilyName(familyName: string): Person {
+        this.familyName = familyName;
+        return this;
+    }
+
+    public withIdentifier(identifier: string): Person {
+        this.identifier = identifier;
+        return this;
+    }
 }
