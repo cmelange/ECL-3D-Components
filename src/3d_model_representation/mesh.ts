@@ -1,5 +1,6 @@
 import { Geometry } from "./geometry";
 import { Material } from "./material";
+import { Group } from "./group";
 
 export class Mesh
 {
@@ -30,6 +31,12 @@ export class Mesh
     {
         this.material = material;
         return this;
+    }
+
+    toGroup(name: string): Group
+    {
+        return new Group().withName(name)
+                          .addMesh(this);
     }
 
 }
