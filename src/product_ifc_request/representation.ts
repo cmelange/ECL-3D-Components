@@ -13,7 +13,7 @@ export class Representation
     }
 
     public addRepresentationItems(representationItems: RepresentationItem[]): Representation {
-        this.representationItems.concat(representationItems);
+        this.representationItems = this.representationItems.concat(representationItems);
         return this;
     }
 }

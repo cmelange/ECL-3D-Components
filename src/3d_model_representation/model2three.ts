@@ -83,10 +83,10 @@ export function modelGroup2ThreeGroup(group: Group): THREE.Group
 {
     let three_group = new THREE.Group();
     three_group.name = group.name;
-    group.meshes.forEach((mesh: Mesh, key: string) => {
+    group.meshes.forEach((mesh: Mesh) => {
         three_group.add(modelMesh2ThreeMesh(mesh));
     });
-    group.children.forEach((group: Group, key: string) => {
+    group.children.forEach((group: Group) => {
         three_group.add(modelGroup2ThreeGroup(group));
     });
     let scale_matrix = new THREE.Matrix4().makeScale(group.scale[0],

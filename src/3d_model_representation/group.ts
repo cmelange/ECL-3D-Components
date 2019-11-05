@@ -4,17 +4,17 @@ import { Vector3D } from "./vector3d";
 export class Group
 {
     name: string;
-    meshes: Map<string, Mesh>;
+    meshes: Mesh[];
     translation: Vector3D;
     rotation: [number, number, number];
     scale: [number, number, number];
-    children: Map<string, Group>;
+    children: Group[];
 
     constructor(name: string='group')
     {
         this.name = name;
-        this.meshes = new Map();
-        this.children = new Map();
+        this.meshes = [];
+        this.children = [];
         this.translation = new Vector3D(0,0,0);
         this.rotation = [0,0,0];
         this.scale = [1,1,1];
@@ -28,13 +28,18 @@ export class Group
 
     addMesh(mesh: Mesh): Group
     {
-        this.meshes.set(mesh.name, mesh);
+        this.meshes.push(mesh);
         return this;
     }
 
     removeMesh(name: string): Group
     {
-        this.meshes.delete(name);
+        let index = this.meshes.findIndex(function(mesh:Mesh) {
+                                            return (mesh.name === name)
+                                          });
+        if (index > -1) {
+            this.meshes.splice(index, 1);
+        }        
         return this;
     }
 
@@ -58,13 +63,18 @@ export class Group
 
     addGroup(group: Group): Group
     {
-        this.children.set(group.name, group);
+        this.children.push(group);
         return this;
     }
 
     removeGroup(name: string): Group
     {
-        this.children.delete(name);
+        let index = this.children.findIndex(function(group:Group) {
+            return (group.name === name)
+          });
+        if (index > -1) {
+        this.children.splice(index, 1);
+        }        
         return this;
     }
 }

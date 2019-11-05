@@ -12,7 +12,7 @@ export class Vector3D {
     translate(vector: Vector3D, mult: number=1) {
         for (let i=0; i<3; i++)
         {
-            this.vector[i] += vector[i]*mult;
+            this.vector[i] += vector.vector[i]*mult;
         }
         return this;
     }
@@ -31,7 +31,7 @@ export class Vector3D {
         {
             for (let j=0; j<3; j++)
             {
-                new_vector[i] = matrix[i][j]*this.vector[j];
+                new_vector[i] += matrix[i][j]*this.vector[j];
             }
         }
         this.vector = new_vector;

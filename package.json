@@ -44,6 +44,7 @@
   "jest": {
     "testMatch": [
       "**/dist/test/**/*.js?(x)"
-    ]
+    ],
+    "testEnvironment": "node"
   }
 }

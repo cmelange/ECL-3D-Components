@@ -11,7 +11,7 @@ export class Vector2D {
     translate(vector: Vector2D, mult: number=1): Vector2D {
         for (let i=0; i<2; i++)
         {
-            this.vector[i] += vector[i]*mult;
+            this.vector[i] += vector.vector[i]*mult;
         }
         return this;
     }
@@ -30,7 +30,7 @@ export class Vector2D {
         {
             for (let j=0; j<2; j++)
             {
-                new_vector[i] = matrix[i][j]*this.vector[j];
+                new_vector[i] += matrix[i][j]*this.vector[j];
             }
         }
         this.vector = new_vector;

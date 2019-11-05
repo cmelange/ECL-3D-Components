@@ -41,7 +41,7 @@ export class Product
     }
 
     public addRepresentations(representations: Representation[]): Product {
-        this.representations.concat(representations);
+        this.representations = this.representations.concat(representations);
         return this;
     }
 }
