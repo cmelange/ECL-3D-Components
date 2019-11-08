@@ -63,7 +63,7 @@ export class PolygonShape implements Shape {
      * @returns {Geometry}
      */
     revolve(angle: number, resolution: number =12): Geometry {
-        let constructionString: string = this.CreatePolygonConstructionString_() + ".REVOLVE(" + angle + "," + resolution + ")";
+        let constructionString: string = this.CreatePolygonConstructionString_() + ".REVOLVE(" + angle + ")";
         return new Geometry(this.toCsgCag_().rotateExtrude({angle: angle, resolution: resolution}),
                             constructionString);
     }
