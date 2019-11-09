@@ -15,23 +15,22 @@ export function rotationMatrix2D(rotation: number): number [][]
             [Math.sin(theta), Math.cos(theta)]];
 }
 
-//TODO change matrix to intrinsic rotation
 /**
- * calculates the Euler intrinsic rotation matrix in the order XYZ
+ * calculates the Euler intrinsic rotation matrix in the order XYZ (Tait-Bryan xy'z'')
  * @param rotation euler angles around X,Y and Z angles respectively
  */
 export function rotationMatrix3D(rotation: number[]): number[][]
 {
     let theta = [toRadians(rotation[0]), toRadians(rotation[1]), toRadians(rotation[2])];
 
-    let cosa = Math.cos(theta[0]);
-    let sina = Math.sin(theta[0]);
-    let cosb = Math.cos(theta[1]);
-    let sinb = Math.sin(theta[1]);
-    let cosc = Math.cos(theta[2]);
-    let sinc = Math.sin(theta[2]);
+    let c1 = Math.cos(theta[0]);
+    let s1 = Math.sin(theta[0]);
+    let c2 = Math.cos(theta[1]);
+    let s2 = Math.sin(theta[1]);
+    let c3 = Math.cos(theta[2]);
+    let s3 = Math.sin(theta[2]);
 
-    return [[cosb*cosc, -cosb*sinc, sinb],
-            [sina*sinb*cosc + cosa*sinc, -sina*sinb*sinc + cosa*cosc, -sina*cosb],
-            [-cosa*sinb*cosc + sina*sinc, cosa*sinb*sinc + sina*cosc, cosa*cosb]];
+    return [[c1*c2, c1*s2*s3-c3*s1, s1*s3 + c1*c3*s2],
+            [c2*s1, c1*c3 + s1*s2*s3, c3*s1*s2 - c1*s3],
+            [-s2, c2*s3, c2*c3]];
 }

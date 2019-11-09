@@ -25,5 +25,5 @@ test('revolved shape constructionString test', () => {
                                                  new Vector2D(0.75,0.25)])]);
     let extrudedGeometry = polygon.revolve(20,10);
     expect(extrudedGeometry.constructionString)
-        .toBe("POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]],[[0.25,0.25],[0.5,0.5],[0.75,0.25]]]).REVOLVE(20,10)");
+        .toBe("POLYGON_SHAPE([[[0,0],[0,1],[1,1],[1,0]],[[0.25,0.25],[0.5,0.5],[0.75,0.25]]]).REVOLVE(20)");
 });
