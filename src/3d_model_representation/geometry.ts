@@ -26,14 +26,14 @@ export class Geometry {
     translate(vector: Vector3D): Geometry {
         this._constructionString = 
             this._constructionString + ".TRANSLATION(" + JSON.stringify(vector.vector) + ")";
-        this.geometry.translate(vector.vector);
+        this.geometry = this.geometry.translate(vector.vector);
         return this;
     }
 
     rotate(rotation: number[]): Geometry {
         this._constructionString = 
             this._constructionString + ".ROTATION(" + JSON.stringify(rotation) + ")";
-        this.geometry.rotate(rotation);
+        this.geometry = this.geometry.rotateEulerXYZ(rotation[0], rotation[1], rotation[2]);
         return this;
     }
 

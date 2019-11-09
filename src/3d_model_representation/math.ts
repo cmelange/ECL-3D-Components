@@ -15,6 +15,11 @@ export function rotationMatrix2D(rotation: number): number [][]
             [Math.sin(theta), Math.cos(theta)]];
 }
 
+//TODO change matrix to intrinsic rotation
+/**
+ * calculates the Euler intrinsic rotation matrix in the order XYZ
+ * @param rotation euler angles around X,Y and Z angles respectively
+ */
 export function rotationMatrix3D(rotation: number[]): number[][]
 {
     let theta = [toRadians(rotation[0]), toRadians(rotation[1]), toRadians(rotation[2])];
