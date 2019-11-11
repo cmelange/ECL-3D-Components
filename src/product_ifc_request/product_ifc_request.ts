@@ -44,4 +44,8 @@ export class ProductIfcRequest
         return this;
     }
 
+    public serialize(): any {
+        return serialize(this);
+    }
+
 }

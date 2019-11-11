@@ -24,7 +24,38 @@
                                                            new Model3D.Vector2D(0.25, 0.15), new Model3D.Vector2D(0.25, 0)]).shape();
                 this.bladeProfile = new Model3D.Curve2D([new Model3D.Vector2D(-0.15, -0.025), new Model3D.Vector2D(-0.15, 0.025),
                                                            new Model3D.Vector2D(0.15, 0.025), new Model3D.Vector2D(0.15, -0.025)]).shape();
-                this.threeGroup = this.generateCovering();
+                this.modelGroup = this.generateCovering()
+                this.threeGroup = Model3D.modelGroup2ThreeGroup(this.modelGroup);
+
+                this.ifcDownload = function(group = this.modelGroup) {
+                    let productIfcRequest =
+                        new Model3D.ProductIfcRequest()
+                                   .withProject(new Model3D.Project()
+                                                           .withName("Patio covering example"))
+                                   .withOwner(new Model3D.OwnerHistory())
+                                   .withProduct(new Model3D.Product()
+                                                       .withName("patio covering")
+                                                       .addRepresentation(Model3D.group2Representation(group)));
+                    let url = "http://localhost:5000/api/create-ifc/product/" + "patio-covering";
+                    fetch(url, 
+                          {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json;charset=utf-8'
+                            },
+                            body: JSON.stringify(productIfcRequest.serialize())
+                          })
+                        .then(function(response) {
+                            return response.blob().then((blob) => {
+                                let link = document.createElement("a");
+                                link.href = URL.createObjectURL(blob);
+                                link.setAttribute("download", "patio-covering.ifc");
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                            });
+                        });
+                }
             };
 
             Covering.prototype.generatePillar = function()
@@ -118,14 +149,15 @@
                 
                 topLevel.withTranslation(new Model3D.Vector3D(-this.width/2, -this.length/2, this.height));
 
-                return Model3D.modelGroup2ThreeGroup(topLevel);
+                return topLevel;
             }
-
+  
             var covering = new Covering();
             var gui = new dat.GUI();
             var heightController = gui.add(covering, 'height', 1.5, 2.5, 0.01).name('Height');
             var widthController = gui.add(covering, 'width', 1.5, 4, 0.01).name('Width');
             var lengthController = gui.add(covering, 'length', 1.5, 6, 0.01).name('Length');
+            gui.add(covering, 'ifcDownload').name('Download IFC file');
 
             heightController.onChange(function(value) {
                 for (let i=0; i<4; ++i) {
