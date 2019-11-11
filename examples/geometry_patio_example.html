@@ -88,7 +88,8 @@
                 if (coverWidth > 0.05) {
                     let coverProfile = new Model3D.Curve2D([new Model3D.Vector2D(0.025, 0), new Model3D.Vector2D(-0.025, 0),
                                                             new Model3D.Vector2D(-0.025, -coverWidth), new Model3D.Vector2D(0.025, -coverWidth)]).shape();
-                    let coverGeom  = coverProfile.extrude(this.width-0.30).rotate([0,90,0])
+                    let coverGeom  = coverProfile.extrude(this.width-0.30)
+                                                 .rotate([0,90,0])
                                                  .translate(new Model3D.Vector3D(0.15,this.length-0.15,-0.25/2));
                     return new Model3D.Group('cover').addMesh(new Model3D.Mesh(coverGeom, this.profileMaterialModel, 'coverMesh'));
                 }
@@ -161,64 +162,91 @@
 
             heightController.onChange(function(value) {
                 for (let i=0; i<4; ++i) {
-                    let pillar = covering.threeGroup.getObjectByName('pillar' + i);
-                    pillar.children[0].geometry = Model3D.csg2TreeGeometry(covering.generatePillar());
+                    let pillarModel = covering.modelGroup.findGroupByName('pillar' + i)
+                    pillarModel.meshes[0].geometry = covering.generatePillar();
+                    let pillarThree = covering.threeGroup.getObjectByName('pillar' + i);
+                    pillarThree.children[0].geometry = Model3D.csg2TreeGeometry(pillarModel.meshes[0].geometry);
                 }
                 covering.threeGroup.position.z = value;
             });
 
             widthController.onChange(function(value) {
                 for (let i=0; i<2; ++i) {
-                    let span = covering.threeGroup.getObjectByName('span' + i);
-                    span.children[0].geometry = Model3D.csg2TreeGeometry(covering.generateSpan());
+                    let spanModel = covering.modelGroup.findGroupByName('span' + i);
+                    spanModel.meshes[0].geometry = covering.generateSpan();
+                    let spanThree = covering.threeGroup.getObjectByName('span' + i);
+                    spanThree.children[0].geometry = Model3D.csg2TreeGeometry(spanModel.meshes[0].geometry);
                 }
                 for (let i=1; i<3; ++i) {
-                    let pillar = covering.threeGroup.getObjectByName('pillar' + i);
-                    pillar.position.x = value - 0.15;
+                    let pillarModel = covering.modelGroup.findGroupByName('pillar' + i);
+                    pillarModel.translation.vector[0] = value - 0.15;
+                    let pillarThree = covering.threeGroup.getObjectByName('pillar' + i);
+                    pillarThree.position.x = value - 0.15;
                 }
-                let blades = covering.threeGroup.getObjectByName('blades');
-                for (let i =0; i<blades.children.length; ++i) {
-                    blades.children[i].children[0].geometry = Model3D.csg2TreeGeometry(covering.generateBlade());
+                let bladesModel = covering.modelGroup.findGroupByName('blades');
+                let bladesThree = covering.threeGroup.getObjectByName('blades');
+                for (let i =0; i<bladesModel.children.length; ++i) {
+                    bladesModel.children[i].meshes[0].geometry = covering.generateBlade();
+                    bladesThree.children[i].children[0].geometry = 
+                        Model3D.csg2TreeGeometry(bladesModel.children[i].meshes[0].geometry);
                 }
+                covering.modelGroup.findGroupByName('pivot1').translation.vector[0] = value - 0.15;
                 covering.threeGroup.getObjectByName('pivot1').position.x = value - 0.15;
+                let modelCover = covering.modelGroup.findGroupByName('cover');             
                 let threeCover = covering.threeGroup.getObjectByName('cover');
                 if (threeCover != undefined) {
+                    covering.modelGroup.removeGroup("cover");
                     covering.threeGroup.remove(threeCover);
-                    covering.threeGroup.add(Model3D.modelGroup2ThreeGroup(covering.generateCover()));
+                    covering.modelGroup.addGroup(covering.generateCover());
+                    let updatedCover = covering.modelGroup.findGroupByName('cover');
+                    covering.threeGroup.add(Model3D.modelGroup2ThreeGroup(updatedCover));
                 }
+                covering.modelGroup.translation.vector[0] = -value/2;
                 covering.threeGroup.position.x = -value/2;
             });
 
             lengthController.onChange(function(value) {
                 for (let i=0; i<2; ++i) {
-                    let pivot = covering.threeGroup.getObjectByName('pivot' + i);
-                    pivot.children[0].geometry = Model3D.csg2TreeGeometry(covering.generatePivot());
+                    let pivotModel = covering.modelGroup.findGroupByName('pivot' + i);
+                    pivotModel.meshes[0].geometry = covering.generatePivot();
+                    let pivotThree = covering.threeGroup.getObjectByName('pivot' + i);
+                    pivotThree.children[0].geometry = Model3D.csg2TreeGeometry(pivotModel.meshes[0].geometry);
                 }
                 for (let i=2; i<4; ++i) {
-                    let pillar = covering.threeGroup.getObjectByName('pillar' + i);
-                    pillar.position.y = value - 0.15;
+                    let pillarModel = covering.modelGroup.findGroupByName('pillar' + i);
+                    pillarModel.translation.vector[1] = value - 0.15;
+                    let pillarThree = covering.threeGroup.getObjectByName('pillar' + i);
+                    pillarThree.position.y = value - 0.15;
                 }
+                covering.modelGroup.findGroupByName('span1').translation.vector[1] = value - 0.15;
                 covering.threeGroup.getObjectByName('span1').position.y = value - 0.15;
-                let blades = covering.threeGroup.getObjectByName('blades');
+                let bladesModel = covering.modelGroup.findGroupByName('blades');
+                let bladesThree = covering.threeGroup.getObjectByName('blades');
                 let numBlades = Math.floor((covering.length - 0.3) / 0.3);
-                for (let i= blades.children.length; i < numBlades; ++i )
+                for (let i= bladesModel.children.length; i < numBlades; ++i )
                 {
                     let blade = new Model3D.Group('blade' + i).addMesh(new Model3D.Mesh(covering.generateBlade(), covering.profileMaterialModel, 'blade' + i + 'Mesh'))
                                                               .withTranslation(new Model3D.Vector3D(0,0.15+(i+0.5)*0.3,0));
-                    blades.add(Model3D.modelGroup2ThreeGroup(blade));
+                    bladesModel.addGroup(blade);
+                    bladesThree.add(Model3D.modelGroup2ThreeGroup(blade));
                 }
-                for (let i=numBlades; i < blades.children.length; ++i)
+                for (let i=numBlades; i < bladesModel.children.length; ++i)
                 {
-                    blades.remove(blades.getObjectByName('blade' + i));
+                    bladesModel.removeGroup('blade' + i);
+                    bladesThree.remove(bladesThree.getObjectByName('blade' + i));
                 }
                 let cover = covering.generateCover();
+                let modelCover = covering.modelGroup.findGroupByName('cover');
                 let threeCover = covering.threeGroup.getObjectByName('cover');
-                if (threeCover != undefined) {
+                if (modelCover != undefined) {
+                    covering.modelGroup.removeGroup('cover');
                     covering.threeGroup.remove(threeCover);
                 }
                 if (cover != undefined) {
+                    covering.modelGroup.addGroup(cover);
                     covering.threeGroup.add(Model3D.modelGroup2ThreeGroup(cover));
                 }
+                covering.modelGroup.translation.vector[1] = -value/2;
                 covering.threeGroup.position.y = -value/2;
             });
 

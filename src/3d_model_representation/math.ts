@@ -30,7 +30,7 @@ export function rotationMatrix3D(rotation: number[]): number[][]
     let c3 = Math.cos(theta[2]);
     let s3 = Math.sin(theta[2]);
 
-    return [[c1*c2, c1*s2*s3-c3*s1, s1*s3 + c1*c3*s2],
-            [c2*s1, c1*c3 + s1*s2*s3, c3*s1*s2 - c1*s3],
-            [-s2, c2*s3, c2*c3]];
+    return [[c2*c3, -c2*s3, s2],
+            [c1*s3 + c3*s1*s2, c1*c3 - s1*s2*s3, -c2*s1],
+            [s1*s3 - c1*c3*s2, c3*s1 + c1*s2*s3, c1*c2]];
 }

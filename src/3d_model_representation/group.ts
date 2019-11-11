@@ -77,4 +77,18 @@ export class Group
         }        
         return this;
     }
+
+    findMeshByName(name: string): Mesh
+    {
+        return this.meshes.find(function(mesh:Mesh) {
+            return (mesh.name === name)
+        });
+    }
+
+    findGroupByName(name: string): Group
+    {
+        return this.children.find(function(group:Group) {
+            return (group.name === name)
+        });
+    }
 }
