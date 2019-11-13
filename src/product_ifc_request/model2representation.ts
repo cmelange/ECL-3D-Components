@@ -13,6 +13,8 @@ export function group2Representation(group: Group): Representation {
     return representation;
 }
 
+
+//TODO correct rotation by using local transformation matrix
 function group2RepresentationItems(group: Group,
                                    translation: Vector3D,
                                    rotation: number[],

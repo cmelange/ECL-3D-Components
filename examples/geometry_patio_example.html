@@ -13,7 +13,7 @@
 
             function Covering() {
                 this.height = 2.0;
-                this.width = 2.0;
+                this.width = 2.5;
                 this.length = 3.5;
 
                 this.profileMaterialModel = new Model3D.Material('profile_material').withRoughness(0.25)
@@ -198,8 +198,12 @@
                     covering.modelGroup.removeGroup("cover");
                     covering.threeGroup.remove(threeCover);
                     covering.modelGroup.addGroup(covering.generateCover());
-                    let updatedCover = covering.modelGroup.findGroupByName('cover');
-                    covering.threeGroup.add(Model3D.modelGroup2ThreeGroup(updatedCover));
+                    let updatedCover = 
+                        Model3D.modelGroup2ThreeGroup(covering.modelGroup.findGroupByName('cover'));
+                    updatedCover.traverse((object) => {
+                        object.receiveShadow = true;
+                        object.castShadow = true });
+                    covering.threeGroup.add(updatedCover);
                 }
                 covering.modelGroup.translation.vector[0] = -value/2;
                 covering.threeGroup.position.x = -value/2;
@@ -228,7 +232,11 @@
                     let blade = new Model3D.Group('blade' + i).addMesh(new Model3D.Mesh(covering.generateBlade(), covering.profileMaterialModel, 'blade' + i + 'Mesh'))
                                                               .withTranslation(new Model3D.Vector3D(0,0.15+(i+0.5)*0.3,0));
                     bladesModel.addGroup(blade);
-                    bladesThree.add(Model3D.modelGroup2ThreeGroup(blade));
+                    let updatedBlade = Model3D.modelGroup2ThreeGroup(blade);
+                    updatedBlade.traverse((object) => {
+                        object.receiveShadow = true;
+                        object.castShadow = true });
+                    bladesThree.add(updatedBlade);
                 }
                 for (let i=numBlades; i < bladesModel.children.length; ++i)
                 {
@@ -244,7 +252,11 @@
                 }
                 if (cover != undefined) {
                     covering.modelGroup.addGroup(cover);
-                    covering.threeGroup.add(Model3D.modelGroup2ThreeGroup(cover));
+                    let updatedCover = Model3D.modelGroup2ThreeGroup(cover);
+                    updatedCover.traverse((object) => {
+                        object.receiveShadow = true;
+                        object.castShadow = true });
+                    covering.threeGroup.add(updatedCover);
                 }
                 covering.modelGroup.translation.vector[1] = -value/2;
                 covering.threeGroup.position.y = -value/2;
@@ -252,23 +264,46 @@
 
             /* === Set up 3D rendering environment === */
             var scene = new THREE.Scene();
+            scene.background = new THREE.Color( 0xdde8ed );
+            scene.fog = new THREE.Fog( scene.background, 5, 20 );
             var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.001, 100 );
             var renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize( window.innerWidth, window.innerHeight );
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             document.body.appendChild( renderer.domElement );
             controls = new THREE.TrackballControls(camera, renderer.domElement);
                       
             /* === Calculate light and camera positions === */
             camera.up = new THREE.Vector3(0,0,1);
-            controls.object.position.set(1.5*covering.length, -covering.width/2, covering.height);
-            controls.target = new THREE.Vector3(0, covering.width, 0);
-            scene.add( new THREE.AmbientLight( 0x777777 ) );
-            var light = new THREE.DirectionalLight( 0xffffff, 0.6 );
-            light.position.set(1.5*covering.length, -covering.width/2, covering.height);
-            light.lookAt(0, covering.width, 0);
+            controls.object.position.set(1.5*covering.width, -covering.length, 0.5);
+            controls.target = new THREE.Vector3(0, 0, 1);
+            scene.add( new THREE.AmbientLight( 0xbbbbbb ) );
+            var light = new THREE.DirectionalLight( 0xffffff, 0.4 );
+            //var light = new THREE.PointLight( 0xffffff, 1, 50 );
+            light.position.set(3*covering.width, covering.length/2, 3*covering.height);
+            light.lookAt(0, 0, 0);
+            light.castShadow = true;
+            light.shadow.mapSize.width = 2048;
+            light.shadow.mapSize.height = 2048;
+            light.shadow.camera.near = 0.5
+            light.shadow.camera.far = 100;
             scene.add( light );
 
+            /* === add ground plane === */
+            var groundGeometry = new THREE.PlaneBufferGeometry(50, 50, 2, 2);
+            var planeMaterial = new THREE.MeshLambertMaterial( { color: 0xc2cdd1 } );
+            var ground = new THREE.Mesh( groundGeometry, planeMaterial );
+    		ground.receiveShadow = true;
+            scene.add(ground);
+
+            /* === add fog === */
+            
+
             /* === Add covering to scene === */
+            covering.threeGroup.traverse((object) => {
+                object.receiveShadow = true;
+                object.castShadow = true });
             scene.add(covering.threeGroup);
 
             var animate = function () {
