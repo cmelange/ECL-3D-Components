@@ -22,7 +22,7 @@ export class Curve3D {
     rotate(rotation: number[]): Curve3D {
         let rotation_matrix = rotationMatrix3D(rotation);
         for (var i=0; i<this.path.length; ++i) {
-            this.path[i].applyMatrix_(rotation_matrix);
+            this.path[i].applyMatrix(rotation_matrix);
         };
         return this;
     }

@@ -1,5 +1,6 @@
 import {rotationMatrix3D} from './math';
 import {Plane} from './plane';
+import { Quaternion } from './quaternion';
 
 export class Vector3D {
 
@@ -25,7 +26,7 @@ export class Vector3D {
         return this;
     }
 
-    applyMatrix_(matrix: number[][]): void {
+    applyMatrix(matrix: number[][]): Vector3D {
         let new_vector = [0,0,0];
         for (let i=0; i<3; i++)
         {
@@ -35,11 +36,20 @@ export class Vector3D {
             }
         }
         this.vector = new_vector;
+        return this;
     }
 
     rotate(rotation: number[]): Vector3D {
-        let rotation_matrix = rotationMatrix3D(rotation);
-        this.applyMatrix_(rotation_matrix);
+        let rotationQuaternion = new Quaternion().setFromEuler(rotation);
+        return this.rotateByQuaternion(rotationQuaternion);
+    }
+
+    rotateByQuaternion(q: Quaternion): Vector3D {
+        let vectorQ = new Quaternion(0, this.vector[0], this.vector[1], this.vector[2]);
+        let rotatedVec = q.multiply(vectorQ.multiply(q.conjugate()));
+        this.vector[0] = rotatedVec.x;
+        this.vector[1] = rotatedVec.y;
+        this.vector[2] = rotatedVec.z;
         return this;
     }
 

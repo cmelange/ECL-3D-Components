@@ -1,35 +1,33 @@
 import { Representation } from "./representation";
 import { RepresentationItem } from "./representation_item";
-import { Group } from "../3d_model_representation";
-import { Vector3D } from "../3d_model_representation";
+import { Group, Vector3D, Quaternion } from "../3d_model_representation";
 import { Transformation } from "./transformation";
 
 export function group2Representation(group: Group): Representation {
     let representation = new Representation();
     representation.addRepresentationItems(group2RepresentationItems(group,
                                                                     new Vector3D(0,0,0),
-                                                                    [0,0,0],
+                                                                    new Quaternion().setFromEuler([0,0,0]),
                                                                     1));    
     return representation;
 }
 
-
-//TODO correct rotation by using local transformation matrix
 function group2RepresentationItems(group: Group,
                                    translation: Vector3D,
-                                   rotation: number[],
+                                   rotation: Quaternion,
                                    scale: number): RepresentationItem[]
 {
     let items : RepresentationItem[] = [];
     let newTranslation: Vector3D = group.translation.copy()
-                                                    .rotate(rotation)  
+                                                    .rotateByQuaternion(rotation)
                                                     .translate(translation);
-    let newRotation = [rotation[0] + group.rotation[0],
-                       rotation[1] + group.rotation[1],
-                       rotation[2] + group.rotation[2]];
+    let newRotation = rotation.multiply(new Quaternion().setFromEuler(group.rotation));
     let newScale = scale*group.scale[0];
     let transformation: Transformation =
-        new Transformation().withRotation(newRotation)
+        new Transformation().withRotation([newRotation.w,
+                                           newRotation.x,
+                                           newRotation.y,
+                                           newRotation.z])
                             .withTranslation([newTranslation.vector[0],
                                               newTranslation.vector[1],
                                               newTranslation.vector[2]])

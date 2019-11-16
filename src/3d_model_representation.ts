@@ -1,3 +1,5 @@
+export {Quaternion} from "./3d_model_representation/quaternion"
+export {rotationMatrix3D} from "./3d_model_representation/math"
 export {Vector2D} from './3d_model_representation/vector2d';
 export {Curve2D} from './3d_model_representation/curve2d';
 export {Shape} from './3d_model_representation/shape';

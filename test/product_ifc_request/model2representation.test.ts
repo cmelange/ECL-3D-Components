@@ -20,8 +20,10 @@ test('model to representation test', () => {
     
     let item0: RepresentationItem = representation.representationItems[0];
     expect(item0.constructionString).toBe("construction mesh 1");
-    expect(item0.transformation.translation).toEqual([0,0,1]);
-    expect(item0.transformation.rotation).toEqual([90,0,0]);
+    expect(item0.transformation.rotation[0]).toBeCloseTo(Math.cos(90/2 * Math.PI/180),5);
+    expect(item0.transformation.rotation[1]).toBeCloseTo(Math.sin(90/2 * Math.PI/180),5);
+    expect(item0.transformation.rotation[2]).toBeCloseTo(0,5);
+    expect(item0.transformation.rotation[3]).toBeCloseTo(0,5);
     expect(item0.transformation.scale).toBe(0.5);
 
     let item1: RepresentationItem = representation.representationItems[1];
@@ -29,6 +31,9 @@ test('model to representation test', () => {
     expect(item1.transformation.translation[0]).toBeCloseTo(-1,5);
     expect(item1.transformation.translation[1]).toBeCloseTo(1,5);
     expect(item1.transformation.translation[2]).toBeCloseTo(1,5);
-    expect(item1.transformation.rotation).toEqual([180,0,0]);
+    expect(item1.transformation.rotation[0]).toBeCloseTo(Math.cos(180/2 * Math.PI/180),5);
+    expect(item1.transformation.rotation[1]).toBeCloseTo(Math.sin(180/2 * Math.PI/180),5);
+    expect(item1.transformation.rotation[2]).toBeCloseTo(0);
+    expect(item1.transformation.rotation[3]).toBeCloseTo(0);
     expect(item1.transformation.scale).toBe(1);
 });
