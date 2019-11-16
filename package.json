@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/cmelange/ECL-3D-Components#readme",
   "dependencies": {
-    "@jscad/csg": "git://github.com/cmelange/csg.js.git#master",
+    "@jscad/csg": "git://github.com/cmelange/csg.js.git#V1_with_UV_support",
     "@types/gl": "^4.1.0",
     "@types/node": "^12.7.4",
     "browserify": "^16.5.0",
