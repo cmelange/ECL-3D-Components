@@ -1,15 +1,17 @@
-import { Mesh, Geometry, Group, Vector3D } from "../../src/3d_model_representation"
+import { Mesh, Geometry, Group, Vector3D, Material } from "../../src/3d_model_representation"
 import { Representation } from "../../src/product_ifc_request/representation";
 import { group2Representation } from "../../src/product_ifc_request/model2representation";
 import { RepresentationItem } from "../../src/product_ifc_request/representation_item";
 
 test('model to representation test', () => {
-    let group1: Group = new Mesh(new Geometry(null, "construction mesh 1"), null)
+    let material1: Material = new Material().withName("material0");
+    let material2: Material = new Material().withName("material1");
+    let group1: Group = new Mesh(new Geometry(null, "construction mesh 1"), material1)
                                  .toGroup("group 1")
                                  .withTranslation(new Vector3D(0,0,1))
                                  .withRotation([90,0,0])
                                  .withScale([0.5,0.5,0.5]);
-    let group2: Group = new Mesh(new Geometry(null, "construction mesh 2"), null)
+    let group2: Group = new Mesh(new Geometry(null, "construction mesh 2"), material2)
                                  .toGroup("group 2")
                                  .withTranslation(new Vector3D(1,1,0))
                                  .withRotation([90,0,0])
@@ -25,15 +27,19 @@ test('model to representation test', () => {
     expect(item0.transformation.rotation[2]).toBeCloseTo(0,5);
     expect(item0.transformation.rotation[3]).toBeCloseTo(0,5);
     expect(item0.transformation.scale).toBe(0.5);
+    expect(item0.material).toBe("material0");
 
     let item1: RepresentationItem = representation.representationItems[1];
     expect(item1.constructionString).toBe("construction mesh 2");
-    expect(item1.transformation.translation[0]).toBeCloseTo(-1,5);
-    expect(item1.transformation.translation[1]).toBeCloseTo(1,5);
-    expect(item1.transformation.translation[2]).toBeCloseTo(1,5);
+    expect(item1.transformation.translation[0]).toBeCloseTo(0.5,5);
+    expect(item1.transformation.translation[1]).toBeCloseTo(0,5);
+    expect(item1.transformation.translation[2]).toBeCloseTo(1.5,5);
     expect(item1.transformation.rotation[0]).toBeCloseTo(Math.cos(180/2 * Math.PI/180),5);
     expect(item1.transformation.rotation[1]).toBeCloseTo(Math.sin(180/2 * Math.PI/180),5);
     expect(item1.transformation.rotation[2]).toBeCloseTo(0);
     expect(item1.transformation.rotation[3]).toBeCloseTo(0);
     expect(item1.transformation.scale).toBe(1);
+    expect(item1.material).toBe("material1");
+
+    expect(representation.materials).toHaveLength(2);
 });

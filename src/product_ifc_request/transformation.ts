@@ -16,6 +16,10 @@ export class Transformation
         return this;
     }
 
+    /**
+     * Set the rotation component of the transformation
+     * @param rotation rotation in Quaternion format [w x y z]
+     */
     public withRotation(rotation: number[]): Transformation {
         this.rotation = rotation;
         return this;
