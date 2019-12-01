@@ -1,11 +1,11 @@
-import { PolyLine2D } from '../../src/3d_model_representation/polyline2d'
+import { Polyline2D } from '../../src/3d_model_representation/polyline2d'
 import { Shape } from '../../src/3d_model_representation/shape'
 import { Vector2D } from '../../src/3d_model_representation/vector2d'
 import { Vector3D } from '../../src/3d_model_representation/vector3d'
 import { Plane } from '../../src/3d_model_representation/plane'
 
 test('translated geometry constructionString test', () => {
-    let polygon = new Shape([new PolyLine2D([new Vector2D(0,0),
+    let polygon = new Shape([new Polyline2D([new Vector2D(0,0),
                                                  new Vector2D(0,1),
                                                  new Vector2D(1,1),
                                                  new Vector2D(1,0)])]);
@@ -15,7 +15,7 @@ test('translated geometry constructionString test', () => {
 });
 
 test('rotated geometry constructionString test', () => {
-    let polygon = new Shape([new PolyLine2D([new Vector2D(0,0),
+    let polygon = new Shape([new Polyline2D([new Vector2D(0,0),
                                                  new Vector2D(0,1),
                                                  new Vector2D(1,1),
                                                  new Vector2D(1,0)])]);
@@ -25,7 +25,7 @@ test('rotated geometry constructionString test', () => {
 });
 
 test('geometry cut by plane constructionString test', () => {
-    let polygon = new Shape([new PolyLine2D([new Vector2D(0,0),
+    let polygon = new Shape([new Polyline2D([new Vector2D(0,0),
                                                  new Vector2D(0,1),
                                                  new Vector2D(1,1),
                                                  new Vector2D(1,0)])]);
@@ -36,7 +36,7 @@ test('geometry cut by plane constructionString test', () => {
 });
 
 test('geometry union constructionString test', () => {
-    let polygon = new Shape([new PolyLine2D([new Vector2D(0,0),
+    let polygon = new Shape([new Polyline2D([new Vector2D(0,0),
                                                  new Vector2D(0,1),
                                                  new Vector2D(1,1),
                                                  new Vector2D(1,0)])]);
@@ -47,7 +47,7 @@ test('geometry union constructionString test', () => {
 });
 
 test('geometry difference constructionString test', () => {
-    let polygon = new Shape([new PolyLine2D([new Vector2D(0,0),
+    let polygon = new Shape([new Polyline2D([new Vector2D(0,0),
                                                  new Vector2D(0,1),
                                                  new Vector2D(1,1),
                                                  new Vector2D(1,0)])]);
@@ -58,7 +58,7 @@ test('geometry difference constructionString test', () => {
 });
 
 test('geometry intersection constructionString test', () => {
-    let polygon = new Shape([new PolyLine2D([new Vector2D(0,0),
+    let polygon = new Shape([new Polyline2D([new Vector2D(0,0),
                                                  new Vector2D(0,1),
                                                  new Vector2D(1,1),
                                                  new Vector2D(1,0)])]);

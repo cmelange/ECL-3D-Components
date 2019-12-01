@@ -3,7 +3,7 @@ import {Vector2D} from './vector2d';
 import { Shape } from './shape';
 import { Curve2D } from './curve2d';
 
-export class PolyLine2D implements Curve2D {
+export class Polyline2D implements Curve2D {
 
     path: Vector2D[];
 
@@ -18,14 +18,14 @@ export class PolyLine2D implements Curve2D {
         return this.path;
     }
 
-    translate(vector: Vector2D): PolyLine2D {
+    translate(vector: Vector2D): Polyline2D {
         for (var i=0; i<this.path.length; ++i) {
             this.path[i].translate(vector);
         };
         return this;
     }
 
-    rotate(rotation: number): PolyLine2D {
+    rotate(rotation: number): Polyline2D {
         let rotation_matrix = rotationMatrix2D(rotation);
         for (var i=0; i<this.path.length; ++i) {
             this.path[i].applyMatrix_(rotation_matrix);
@@ -33,12 +33,12 @@ export class PolyLine2D implements Curve2D {
         return this;
     }
 
-    copy():PolyLine2D {
+    copy():Polyline2D {
         var copyArray = [];
         for (var i=0; i<this.path.length; ++i) {
             copyArray.push(this.path[i].copy());
         };
-        return new PolyLine2D(copyArray);
+        return new Polyline2D(copyArray);
     }
 
     length(): number {
@@ -49,7 +49,7 @@ export class PolyLine2D implements Curve2D {
         return length;
     }
 
-    appendArray(vectorArray: Vector2D[]): PolyLine2D {
+    appendArray(vectorArray: Vector2D[]): Polyline2D {
         for (var i=0; i<vectorArray.length; ++i) {
             if ((i===0) && (this.path.length > 0)) {
                 if (this.path[this.path.length-1].copy().translate(vectorArray[0], -1).length() < 1) {
@@ -61,12 +61,12 @@ export class PolyLine2D implements Curve2D {
         return this;
     }
 
-    append(curve: PolyLine2D): PolyLine2D {
+    append(curve: Polyline2D): Polyline2D {
         this.appendArray(curve.path);
         return this;
     }
 
-    repeat(num: number): PolyLine2D {
+    repeat(num: number): Polyline2D {
         var singleCurve = this.copy();
         var translationVector = singleCurve.path[singleCurve.path.length-1].copy();
         for (var i=1; i<num; ++i) {
@@ -87,7 +87,7 @@ export class PolyLine2D implements Curve2D {
             translationVector.multiply(distance/translationVector.length());
             vectorArray.push(this.path[i].copy().translate(translationVector));
         };
-        return this.copy().append(new PolyLine2D(vectorArray)).shape();
+        return this.copy().append(new Polyline2D(vectorArray)).shape();
     }
 
     generateConstructionString(): string {

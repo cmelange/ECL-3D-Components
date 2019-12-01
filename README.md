@@ -8,7 +8,7 @@ Every [**Geometry**](https://github.com/cmelange/ECL-3D-Components/blob/master/s
 
 * 2D constructs
     * **POLYLINE2D**([[x,y]])
-    * **SHAPE**({*curve_1*; ... ;*curve_n*})
+    * **SHAPE**({*curve_1*; ... ; *curve_n*})
 * 2D to 3D transforms
     * **EXTRUDE**(height)
     * **REVOLVE**(angle,resolution)

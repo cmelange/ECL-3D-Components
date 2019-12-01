@@ -18,12 +18,15 @@
 
                 this.profileMaterialModel = new Model3D.Material('profile_material').withRoughness(0.25)
                                                                                     .withMetallic(0);
-                this.pillarProfile = new Model3D.Curve2D([new Model3D.Vector2D(0, 0), new Model3D.Vector2D(0, 0.15),
-                                                          new Model3D.Vector2D(0.15, 0.15), new Model3D.Vector2D(0.15, 0)]).shape();
-                this.sleeperProfile = new Model3D.Curve2D([new Model3D.Vector2D(0, 0), new Model3D.Vector2D(0, 0.15),
-                                                           new Model3D.Vector2D(0.25, 0.15), new Model3D.Vector2D(0.25, 0)]).shape();
-                this.bladeProfile = new Model3D.Curve2D([new Model3D.Vector2D(-0.15, -0.025), new Model3D.Vector2D(-0.15, 0.025),
-                                                           new Model3D.Vector2D(0.15, 0.025), new Model3D.Vector2D(0.15, -0.025)]).shape();
+                this.pillarProfile = new Model3D.Polyline2D([new Model3D.Vector2D(0, 0), new Model3D.Vector2D(0, 0.15),
+                                                             new Model3D.Vector2D(0.15, 0.15), new Model3D.Vector2D(0.15, 0),
+                                                             new Model3D.Vector2D(0, 0)]).shape();
+                this.sleeperProfile = new Model3D.Polyline2D([new Model3D.Vector2D(0, 0), new Model3D.Vector2D(0, 0.15),
+                                                              new Model3D.Vector2D(0.25, 0.15), new Model3D.Vector2D(0.25, 0),
+                                                              new Model3D.Vector2D(0, 0)]).shape();
+                this.bladeProfile = new Model3D.Polyline2D([new Model3D.Vector2D(-0.15, -0.025), new Model3D.Vector2D(-0.15, 0.025),
+                                                            new Model3D.Vector2D(0.15, 0.025), new Model3D.Vector2D(0.15, -0.025),
+                                                            new Model3D.Vector2D(-0.15, -0.025)]).shape();
                 this.modelGroup = this.generateCovering()
                 this.threeGroup = Model3D.modelGroup2ThreeGroup(this.modelGroup);
 
@@ -86,8 +89,9 @@
                 let numBlades = Math.floor((this.length - 0.3) / 0.3);
                 let coverWidth = this.length - 2*0.15 - numBlades*0.3;
                 if (coverWidth > 0.05) {
-                    let coverProfile = new Model3D.Curve2D([new Model3D.Vector2D(0.025, 0), new Model3D.Vector2D(-0.025, 0),
-                                                            new Model3D.Vector2D(-0.025, -coverWidth), new Model3D.Vector2D(0.025, -coverWidth)]).shape();
+                    let coverProfile = new Model3D.Polyline2D([new Model3D.Vector2D(0.025, 0), new Model3D.Vector2D(-0.025, 0),
+                                                               new Model3D.Vector2D(-0.025, -coverWidth), new Model3D.Vector2D(0.025, -coverWidth),
+                                                               new Model3D.Vector2D(0.025, 0)]).shape();
                     let coverGeom  = coverProfile.extrude(this.width-0.30)
                                                  .rotate([0,90,0])
                                                  .translate(new Model3D.Vector3D(0.15,this.length-0.15,-0.25/2));
