@@ -69,7 +69,7 @@ export class Shape {
 
     private createConstructionString_(): string
     {
-        return "SHAPE([" + this.paths.map(path => path.generateConstructionString()).join(',') + "])";
+        return "SHAPE({" + this.paths.map(path => path.generateConstructionString()).join(';') + "})";
     }
 
 }
