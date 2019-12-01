@@ -1,6 +1,6 @@
 import {toRadians} from './math';
 import {Vector2D} from './vector2d';
-import {Curve2D} from './curve2d';
+import {PolyLine2D} from './polyline2d';
 import {Shape} from './shape';
 
 export function tangentPointToCircle(point, center, radius, direction=true): Vector2D {
@@ -12,7 +12,7 @@ export function tangentPointToCircle(point, center, radius, direction=true): Vec
 export function circleLine(radius: number,
                            center: Vector2D, 
                            angle: number[],
-                           numPoints: number=10): Curve2D {
+                           numPoints: number=10): PolyLine2D {
     let angleDistance = (angle[1]-angle[0])/(numPoints-1);
     let circlePath = [];
     for (let i=0; i<numPoints; ++i) {
@@ -20,7 +20,7 @@ export function circleLine(radius: number,
                             radius * Math.sin(toRadians(angle[0] + i*angleDistance)))
                                     .translate(center));
     };
-    return new Curve2D(circlePath);
+    return new PolyLine2D(circlePath);
 };
 
 export function circle(radius: number,
@@ -34,7 +34,7 @@ export function rectangle(width: number,
                           height: number,
                           center: Vector2D = new Vector2D(0,0) ): Shape
 {
-    return new Curve2D([new Vector2D(-width/2, -height/2),
+    return new PolyLine2D([new Vector2D(-width/2, -height/2),
                         new Vector2D(-width/2,  height/2),
                         new Vector2D( width/2,  height/2),
                         new Vector2D( width/2, -height/2)]).shape();
@@ -43,7 +43,7 @@ export function rectangle(width: number,
 export function parabola(points: Vector2D[],
                          extremum: number,
                          numPoints: number=10,
-                         iterations:number=15): Curve2D {
+                         iterations:number=15): PolyLine2D {
     let x1 = points[0].vector[0];
     let y1 = points[0].vector[1] - extremum;
     let x2 = points[1].vector[0];
@@ -70,5 +70,5 @@ export function parabola(points: Vector2D[],
         parabolaPath.push(new Vector2D(currentX , A*Math.pow(currentX,2)).translate(translation));
         currentX = currentX + calcStep;
     }
-    return new Curve2D(parabolaPath);
+    return new PolyLine2D(parabolaPath);
 }
