@@ -10,6 +10,12 @@ export class Vector3D {
         this.vector = [x,y,z];
     }
 
+    equals(vector: Vector3D): boolean {
+        return ((this.vector[0] === this.vector[0]) && 
+                (this.vector[1] === this.vector[1]) && 
+                (this.vector[2] === this.vector[2]));
+    }
+
     translate(vector: Vector3D, mult: number=1) {
         for (let i=0; i<3; i++)
         {

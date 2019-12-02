@@ -3,10 +3,9 @@ export {rotationMatrix3D} from "./3d_model_representation/math";
 export {Curve2D} from "./3d_model_representation/curve2d";
 export {Vector2D} from './3d_model_representation/vector2d';
 export {Polyline2D} from './3d_model_representation/polyline2d';
+export {Circleline2D} from './3d_model_representation/circleline2d';
 export {Shape} from './3d_model_representation/shape';
 export {tangentPointToCircle,
-        circleLine,
-        circle,
         rectangle,
         parabola} from './3d_model_representation/2d_functions';
 export {Vector3D} from './3d_model_representation/vector3d';

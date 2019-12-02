@@ -9,35 +9,15 @@ export function tangentPointToCircle(point, center, radius, direction=true): Vec
     return point.Copy().Add(center.Copy().Add(point,-1).Rotate(tangent_angle).Multiply(Math.cos(tangent_angle)));
 }
 
-export function circleLine(radius: number,
-                           center: Vector2D, 
-                           angle: number[],
-                           numPoints: number=10): Polyline2D {
-    let angleDistance = (angle[1]-angle[0])/(numPoints-1);
-    let circlePath = [];
-    for (let i=0; i<numPoints; ++i) {
-        circlePath.push(new Vector2D(radius * Math.cos(toRadians(angle[0] + i*angleDistance)),
-                            radius * Math.sin(toRadians(angle[0] + i*angleDistance)))
-                                    .translate(center));
-    };
-    return new Polyline2D(circlePath);
-};
-
-export function circle(radius: number,
-                       center: Vector2D = new Vector2D(0,0),
-                       numPoints: number=10): Shape
-{
-    return circleLine(radius, center, [0, 360], numPoints).shape();
-}
-
 export function rectangle(width: number,
                           height: number,
                           center: Vector2D = new Vector2D(0,0) ): Shape
 {
     return new Polyline2D([new Vector2D(-width/2, -height/2),
-                        new Vector2D(-width/2,  height/2),
-                        new Vector2D( width/2,  height/2),
-                        new Vector2D( width/2, -height/2)]).shape();
+                           new Vector2D(-width/2,  height/2),
+                           new Vector2D( width/2,  height/2),
+                           new Vector2D( width/2, -height/2),
+                           new Vector2D(-width/2, -height/2)]).shape();
 }
 
 export function parabola(points: Vector2D[],

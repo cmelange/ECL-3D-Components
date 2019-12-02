@@ -8,6 +8,11 @@ export class Vector2D {
         this.vector = [x,y];
     }
 
+    equals(vector: Vector2D): boolean {
+        return ((this.vector[0] === vector.vector[0]) &&
+                (this.vector[1] === vector.vector[1]));
+    }
+
     translate(vector: Vector2D, mult: number=1): Vector2D {
         for (let i=0; i<2; i++)
         {

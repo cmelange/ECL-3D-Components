@@ -76,7 +76,11 @@ export class Polyline2D implements Curve2D {
     }
 
     shape(): Shape {
-        return new Shape([this]);
+        let closedPolygon: Polyline2D = this.copy();
+        if (!closedPolygon.path[0].equals(closedPolygon.path[closedPolygon.path.length-1])) {
+            closedPolygon.appendArray([closedPolygon.path[0]]);
+        }
+        return new Shape([closedPolygon]);
     }
 
     thicken(distance: number): Shape {
