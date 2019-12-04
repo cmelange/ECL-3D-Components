@@ -4,6 +4,7 @@ export {Curve2D} from "./3d_model_representation/curve2d";
 export {Vector2D} from './3d_model_representation/vector2d';
 export {Polyline2D} from './3d_model_representation/polyline2d';
 export {Circleline2D} from './3d_model_representation/circleline2d';
+export {CompositeCurve2D} from './3d_model_representation/composite_curve2d'
 export {Shape} from './3d_model_representation/shape';
 export {tangentPointToCircle,
         rectangle,
