@@ -20,7 +20,7 @@ export {TextureMap,
 export {Material} from './3d_model_representation/material';
 export {Mesh} from './3d_model_representation/mesh';
 export {Group} from './3d_model_representation/group';
-export {csg2TreeGeometry,
+export {modelGeometry2TreeGeometry,
         modelMaterial2ThreeMaterial,
         modelMesh2ThreeMesh,
         modelGroup2ThreeGroup} from './3d_model_representation/model2three';
