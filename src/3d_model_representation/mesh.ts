@@ -1,8 +1,9 @@
 import { Geometry } from "./geometry";
 import { Material } from "./material";
 import { Group } from "./group";
+import { AbstractIdentifiable } from "./abstract_identifiable";
 
-export class Mesh
+export class Mesh extends AbstractIdentifiable
 {
     name: string;
     geometry: Geometry;
@@ -10,6 +11,7 @@ export class Mesh
 
     constructor(geometry: Geometry, material: Material, name: string='mesh')
     {
+        super();
         this.geometry = geometry;
         this.material = material;
         this.name = name;

@@ -30,12 +30,14 @@
     "@jscad/csg": "git://github.com/cmelange/csg.js.git#V1_with_UV_support",
     "@types/gl": "^4.1.0",
     "@types/node": "^12.7.4",
+    "@types/uuid": "^3.4.6",
     "browserify": "^16.5.0",
     "gl": "^4.4.0",
     "pngjs": "^3.4.0",
     "three": "^0.108.0",
     "typescript-json-serializer": "^1.3.0",
-    "uglify-js": "^3.6.0"
+    "uglify-js": "^3.6.0",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@types/jest": "^24.0.19",

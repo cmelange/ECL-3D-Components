@@ -1,7 +1,8 @@
 import { Mesh } from "./mesh";
 import { Vector3D } from "./vector3d";
+import { AbstractIdentifiable } from "./abstract_identifiable";
 
-export class Group
+export class Group extends AbstractIdentifiable
 {
     name: string;
     meshes: Mesh[];
@@ -12,6 +13,7 @@ export class Group
 
     constructor(name: string='group')
     {
+        super();
         this.name = name;
         this.meshes = [];
         this.children = [];

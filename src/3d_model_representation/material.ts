@@ -1,6 +1,7 @@
 import {TextureMap} from './texture_map'
+import { AbstractIdentifiable } from './abstract_identifiable';
 
-export class Material
+export class Material extends AbstractIdentifiable
 {
     name: string;
     baseColor: [number, number, number, number]= [1,1,1,1];
@@ -13,8 +14,8 @@ export class Material
     emissive: [number, number, number];
     emissiveTexture: TextureMap;
     
-    constructor(name: string= 'material')
-    {
+    constructor(name: string= 'material') {
+        super();
         this.name = name;
     }
 

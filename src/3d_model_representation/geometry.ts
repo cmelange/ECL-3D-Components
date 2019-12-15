@@ -1,14 +1,16 @@
 import {Vector3D} from './vector3d';
 import {Plane} from './plane';
 import * as csg from '@jscad/csg';
+import { AbstractIdentifiable } from './abstract_identifiable';
 
-export class Geometry {
+export class Geometry extends AbstractIdentifiable{
 
     geometry; //type csg.CSG
     name: string;
     private _constructionString: string;
 
     constructor(geometry, constructionString: string = '', name: string ='geometry') {
+        super();
         this.name = name;
         this.geometry = geometry;
         this._constructionString = constructionString;
