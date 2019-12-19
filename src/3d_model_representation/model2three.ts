@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { Geometry, Mesh, Material, Group } from '../3d_model_representation';
 import { Model2ThreeMaterialContainter } from './model_three_material_container';
 import { toRadians } from "./math";
+import { Vector3D } from './vector3d';
+import { Quaternion } from 'three';
 
 export function modelGeometry2TreeGeometry(geometry: Geometry): THREE.BufferGeometry
 {
@@ -73,9 +75,9 @@ export function modelMaterial2ThreeMaterial(material: Material): THREE.MeshStand
 }
 
 export function modelMesh2ThreeMesh(mesh: Mesh,
-                                    materialList: {[id: string]: Model2ThreeMaterialContainter} = {})
+                                    materialDict: {[id: string]: Model2ThreeMaterialContainter} = {})
 {
-    let three_material: THREE.Material = threeMaterialFromList(mesh.material, materialList);  
+    let three_material: THREE.Material = threeMaterialFromList(mesh.material, materialDict);  
     let three_geometry = modelGeometry2TreeGeometry(mesh.geometry);
     let three_mesh = new THREE.Mesh(three_geometry, three_material);
     three_mesh.name = mesh.id;
@@ -83,36 +85,37 @@ export function modelMesh2ThreeMesh(mesh: Mesh,
 }
 
 export function modelGroup2ThreeGroup(group: Group,
-                                      materialList: {[id: string]: Model2ThreeMaterialContainter} = {}): THREE.Group
+                                      materialDict: {[id: string]: Model2ThreeMaterialContainter} = {}): THREE.Group
 {
     let three_group = new THREE.Group();
     three_group.name = group.id;
     group.meshes.forEach((mesh: Mesh) => {
-        three_group.add(modelMesh2ThreeMesh(mesh, materialList));
+        three_group.add(modelMesh2ThreeMesh(mesh, materialDict));
     });
     group.children.forEach((group: Group) => {
-        three_group.add(modelGroup2ThreeGroup(group, materialList));
+        three_group.add(modelGroup2ThreeGroup(group, materialDict));
     });
-    three_group.scale = new THREE.Vector3(group.scale[0],
-                                          group.scale[1],
-                                          group.scale[2]);
+    let scale_matrix = new THREE.Matrix4().makeScale(group.scale[0],
+                                                     group.scale[1],
+                                                     group.scale[2]);
+    three_group.applyMatrix(scale_matrix);
     three_group.setRotationFromEuler(new THREE.Euler(toRadians(group.rotation[0]),
                                                      toRadians(group.rotation[1]),
                                                      toRadians(group.rotation[2])));
-    three_group.position = new THREE.Vector3(group.translation.vector[0],
-                                             group.translation.vector[1],
-                                             group.translation.vector[2]);
-    three_group.updateMatrix();
+    let translation_matrix = new THREE.Matrix4().makeTranslation(group.translation.vector[0],
+                                                                 group.translation.vector[1],
+                                                                 group.translation.vector[2]);
+    three_group.applyMatrix(translation_matrix);
     return three_group;
 }
 
 export function updateThreeMesh(threeMesh: THREE.Mesh,
                                 modelMesh: Mesh,
-                                materialList: {[id: string]: Model2ThreeMaterialContainter} = {}) {
+                                materialDict: {[id: string]: Model2ThreeMaterialContainter} = {}) {
     let threeMaterial: THREE.Material = <THREE.Material> threeMesh.material;
     if (threeMaterial.name !== modelMesh.material.id) {
         //a new material was assigned to this mesh
-        threeMesh.material = threeMaterialFromList(modelMesh.material, materialList);
+        threeMesh.material = threeMaterialFromList(modelMesh.material, materialDict);
     }
     if (threeMesh.geometry.name !== modelMesh.geometry.id) {
         //a new geometry was assiged to this mesh
@@ -122,82 +125,100 @@ export function updateThreeMesh(threeMesh: THREE.Mesh,
 
 export function updateThreeGroup(threeGroup: THREE.Group,
                                  modelGroup: Group,
-                                 materialList: {[id: string]: Model2ThreeMaterialContainter} = {}) {
+                                 materialDict: {[id: string]: Model2ThreeMaterialContainter} = {}) {
     //verify group transformation
-    let updateNeeded = false;
     let EPS = 1e-5;
+    let radX = toRadians(modelGroup.rotation[0]);
+    let radY = toRadians(modelGroup.rotation[1]);
+    let radZ = toRadians(modelGroup.rotation[2]);
     //scale
     if ((Math.abs(threeGroup.scale.x - modelGroup.scale[0]) > EPS) ||
         (Math.abs(threeGroup.scale.y - modelGroup.scale[1]) > EPS) ||
         (Math.abs(threeGroup.scale.z - modelGroup.scale[2]) > EPS)) {
-        threeGroup.scale = new THREE.Vector3(modelGroup.scale[0],
-                                              modelGroup.scale[1],
-                                              modelGroup.scale[2]);
-        updateNeeded = true;
+        let diffScale: number[] = [modelGroup.scale[0] / threeGroup.scale.x,
+                                   modelGroup.scale[1] / threeGroup.scale.y,
+                                   modelGroup.scale[2] / threeGroup.scale.z];
+        let scaleMatrix = new THREE.Matrix4().makeScale(diffScale[0],
+                                                        diffScale[1],
+                                                        diffScale[2]);
+        //reset rotation so that scale is applied on local axis
+        threeGroup.setRotationFromQuaternion(new Quaternion(1,0,0,0))
+        //apply scale
+        threeGroup.applyMatrix(scaleMatrix);
     }
     //rotation
-    let radX = toRadians(modelGroup.rotation[0]);
-    let radY = toRadians(modelGroup.rotation[1]);
-    let radZ = toRadians(modelGroup.rotation[2]);
     if ((Math.abs(threeGroup.rotation.x - radX) > EPS) ||
         (Math.abs(threeGroup.rotation.y - radY) > EPS) ||
         (Math.abs(threeGroup.rotation.z - radZ) > EPS)) {
         threeGroup.setRotationFromEuler(new THREE.Euler(radX,
                                                         radY,
                                                         radZ));
-        updateNeeded = true;
     }
     //translation
     if ((Math.abs(threeGroup.position.x - modelGroup.translation.vector[0]) > EPS) ||
         (Math.abs(threeGroup.position.y - modelGroup.translation.vector[1]) > EPS) ||
         (Math.abs(threeGroup.position.z - modelGroup.translation.vector[2]) > EPS)) {
-        threeGroup.scale = new THREE.Vector3(modelGroup.translation.vector[0],
-                                             modelGroup.translation.vector[1],
-                                             modelGroup.translation.vector[2]);
-        updateNeeded = true;
+        let diffTranslation = modelGroup.translation.copy()
+                                                    .translate(new Vector3D(-threeGroup.position.x,
+                                                                            -threeGroup.position.y,
+                                                                            -threeGroup.position.z));
+        let translationMatrix = new THREE.Matrix4().makeTranslation(diffTranslation.vector[0],
+                                                                     diffTranslation.vector[1],
+                                                                     diffTranslation.vector[2]);
+        threeGroup.applyMatrix(translationMatrix);
     }
-    if (updateNeeded) {
-        threeGroup.updateMatrix();
+
+    //clear active flags for materials in materialDict
+    for (let id in materialDict) {
+        materialDict[id].active = false;
     }
-    //start with building dictionary of all objects in three group
-    let threeObjectList: {[id: string]: THREE.Object3D} = {};
-    threeGroup.children.forEach( (object) => {threeObjectList[object.name] = object} );
+    //build dictionary of all objects in three group
+    let threeObjectDict: {[id: string]: THREE.Object3D} = {};
+    threeGroup.children.forEach( (object) => {threeObjectDict[object.name] = object} );
     //process alle meshes in the group
     modelGroup.meshes.forEach((mesh) => {
-        if (mesh.id in threeObjectList) {
+        if (mesh.id in threeObjectDict) {
             //mesh already exists -> update mesh
-            updateThreeMesh(<THREE.Mesh> threeObjectList[mesh.id], mesh, materialList);
-            delete threeObjectList[mesh.id]; //remove from objectList because fully processed
+            updateThreeMesh(<THREE.Mesh> threeObjectDict[mesh.id], mesh, materialDict);
+            delete threeObjectDict[mesh.id]; //remove from objectList because fully processed
         }
         else {
             //mesh doesn't exist yet -> add mesh
-            threeGroup.add(modelMesh2ThreeMesh(mesh, materialList));
+            threeGroup.add(modelMesh2ThreeMesh(mesh, materialDict));
         }
     });
     //process all child groups in the group
     modelGroup.children.forEach( (group) => {
-        if (group.id in threeObjectList) {
+        if (group.id in threeObjectDict) {
             //group already exists -> update group
-            updateThreeGroup(<THREE.Group> threeObjectList[group.id], group, materialList);
-            delete threeObjectList[group.id]; //remove from objectLis because fully processed
+            updateThreeGroup(<THREE.Group> threeObjectDict[group.id], group, materialDict);
+            delete threeObjectDict[group.id]; //remove from objectLis because fully processed
         }
     });
     //remove all objects that are no longer in the model
-    for (let id in threeObjectList) {
-        threeGroup.remove(threeObjectList[id]);
+    for (let id in threeObjectDict) {
+        threeGroup.remove(threeObjectDict[id]);
     }
-    //TODO remove materials that are no longer used
+    //remove materials that are no longer used
+    let materialsToRemove: string[] = [];
+    for (let id in materialDict) {
+        if (materialDict[id].active === false) {
+            materialsToRemove.push(id);
+        }
+    }
+    materialsToRemove.forEach(id => delete materialDict[id]);
 }
 
 function threeMaterialFromList(material: Material,
-                               materialList: {[id: string]: Model2ThreeMaterialContainter} = {}): THREE.Material {
+                               materialDict: {[id: string]: Model2ThreeMaterialContainter} = {}): THREE.Material {
     let threeMaterial: THREE.Material;
-    if (material.id in materialList) {
-        threeMaterial = materialList[material.id].threeMaterial;
+    if (material.id in materialDict) { //material already exists
+        threeMaterial = materialDict[material.id].threeMaterial;
+        materialDict[material.id].active = true;
     } 
     else {  //add material to the materialList if it hasn't been created before
         let newMaterialContainer = new Model2ThreeMaterialContainter(material);
-        materialList[material.id] = newMaterialContainer;
+        materialDict[material.id] = newMaterialContainer;
         threeMaterial = newMaterialContainer.threeMaterial;
     }
     return threeMaterial;

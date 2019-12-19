@@ -6,9 +6,9 @@ import { Plane } from '../../src/3d_model_representation/plane'
 
 test('translated geometry constructionString test', () => {
     let polygon = new Shape([new Polyline2D([new Vector2D(0,0),
-                                                 new Vector2D(0,1),
-                                                 new Vector2D(1,1),
-                                                 new Vector2D(1,0)])]);
+                                             new Vector2D(0,1),
+                                             new Vector2D(1,1),
+                                             new Vector2D(1,0)])]);
     let translatedGeometry = polygon.extrude(1).translate(new Vector3D(1,2,1));
     expect(translatedGeometry.constructionString)
         .toBe("SHAPE({POLYLINE2D([[0,0],[0,1],[1,1],[1,0]])}).EXTRUDE(1).TRANSLATION([1,2,1])");
@@ -16,9 +16,9 @@ test('translated geometry constructionString test', () => {
 
 test('rotated geometry constructionString test', () => {
     let polygon = new Shape([new Polyline2D([new Vector2D(0,0),
-                                                 new Vector2D(0,1),
-                                                 new Vector2D(1,1),
-                                                 new Vector2D(1,0)])]);
+                                             new Vector2D(0,1),
+                                             new Vector2D(1,1),
+                                             new Vector2D(1,0)])]);
     let rotatedGeometry = polygon.extrude(1).rotate([45,90,45]);
     expect(rotatedGeometry.constructionString)
         .toBe("SHAPE({POLYLINE2D([[0,0],[0,1],[1,1],[1,0]])}).EXTRUDE(1).ROTATION([45,90,45])");

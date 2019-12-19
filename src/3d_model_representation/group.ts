@@ -34,10 +34,10 @@ export class Group extends AbstractIdentifiable
         return this;
     }
 
-    removeMesh(name: string): Group
+    removeMesh(id: string): Group
     {
         let index = this.meshes.findIndex(function(mesh:Mesh) {
-                                            return (mesh.name === name)
+                                            return (mesh.id === id)
                                           });
         if (index > -1) {
             this.meshes.splice(index, 1);
@@ -69,10 +69,10 @@ export class Group extends AbstractIdentifiable
         return this;
     }
 
-    removeGroup(name: string): Group
+    removeGroup(id: string): Group
     {
         let index = this.children.findIndex(function(group:Group) {
-            return (group.name === name)
+            return (group.id === id)
           });
         if (index > -1) {
         this.children.splice(index, 1);
