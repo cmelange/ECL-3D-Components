@@ -2,7 +2,8 @@
   "name": "ecl3d",
   "version": "1.0.0",
   "description": "Javascript library to facilitate the build and visualisation of 3D models",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "index.ts",
   "scripts": {
     "test": "npm run tsc && jest",
     "build": "npm run tsc && npm run clean && npm run browserify",

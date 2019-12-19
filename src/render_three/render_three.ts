@@ -1,4 +1,4 @@
-import Canvas from './render_three/MockCanvas';
+import Canvas from './MockCanvas';
 import * as THREE from 'three';
 import { Stream, Duplex } from 'stream';
 
