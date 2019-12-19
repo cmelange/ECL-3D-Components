@@ -80,10 +80,24 @@ export class Group extends AbstractIdentifiable
         return this;
     }
 
+    findMeshById(id: string): Mesh
+    {
+        return this.meshes.find(function(mesh:Mesh) {
+            return (mesh.id === id)
+        });
+    }
+
     findMeshByName(name: string): Mesh
     {
         return this.meshes.find(function(mesh:Mesh) {
             return (mesh.name === name)
+        });
+    }
+
+    findGroupById(id: string): Group
+    {
+        return this.children.find(function(group:Group) {
+            return (group.id === id)
         });
     }
 

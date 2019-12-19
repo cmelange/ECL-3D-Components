@@ -81,6 +81,8 @@ export function modelMesh2ThreeMesh(mesh: Mesh,
     let three_geometry = modelGeometry2TreeGeometry(mesh.geometry);
     let three_mesh = new THREE.Mesh(three_geometry, three_material);
     three_mesh.name = mesh.id;
+    three_mesh.castShadow = mesh.castShadowFlag;
+    three_mesh.receiveShadow = mesh.receiveShadowFlag;
     return three_mesh;
 }
 
@@ -120,6 +122,12 @@ export function updateThreeMesh(threeMesh: THREE.Mesh,
     if (threeMesh.geometry.name !== modelMesh.geometry.id) {
         //a new geometry was assiged to this mesh
         threeMesh.geometry = modelGeometry2TreeGeometry(modelMesh.geometry);
+    }
+    if (threeMesh.castShadow !== modelMesh.castShadowFlag) {
+        threeMesh.castShadow = modelMesh.castShadowFlag;
+    }
+    if (threeMesh.receiveShadow !== modelMesh.receiveShadowFlag) {
+        threeMesh.receiveShadow = modelMesh.receiveShadowFlag;
     }
 }
 
@@ -192,7 +200,11 @@ export function updateThreeGroup(threeGroup: THREE.Group,
         if (group.id in threeObjectDict) {
             //group already exists -> update group
             updateThreeGroup(<THREE.Group> threeObjectDict[group.id], group, materialDict);
-            delete threeObjectDict[group.id]; //remove from objectLis because fully processed
+            delete threeObjectDict[group.id]; //remove from objectList because fully processed
+        }
+        else {
+            //group doesn't exist yet -> add group
+            threeGroup.add(modelGroup2ThreeGroup(group, materialDict));
         }
     });
     //remove all objects that are no longer in the model

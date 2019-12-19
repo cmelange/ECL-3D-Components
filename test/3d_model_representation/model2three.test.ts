@@ -1,5 +1,5 @@
 import { Mesh, Geometry, Group, Vector3D, Material, modelGroup2ThreeGroup, Shape, Polyline2D, Vector2D } from "../../src/3d_model_representation"
-import { updateThreeGroup } from "../../src/3d_model_representation/model2three";
+import { updateThreeGroup, updateThreeMesh } from "../../src/3d_model_representation/model2three";
 import { toRadians } from "../../src/3d_model_representation/math";
 import { Model2ThreeMaterialContainter } from "../../src/3d_model_representation/model_three_material_container";
 
@@ -53,7 +53,9 @@ test('updateThreeGroup update meshes and materials', () => {
                                                            new Vector2D(1,0)])])
                                     .extrude(1).translate(new Vector3D(1,2,1));
     group.meshes[0].withGeometry(newGeometry)
-                   .withMaterial(material1);
+                   .withMaterial(material1)
+                   .castShadow(false)
+                   .receiveShadow(false);
     group.removeMesh(group.meshes[1].id);
     group.addMesh(new Mesh(geometry, material1));
 
@@ -66,6 +68,8 @@ test('updateThreeGroup update meshes and materials', () => {
     let updatedMesh: THREE.Mesh = <THREE.Mesh> threeGroup.children.find(mesh => mesh.name === group.meshes[0].id);
     expect(updatedMesh.geometry.name === newGeometry.id);
     expect((<THREE.Material> updatedMesh.material).name === newGeometry.id);
+    expect(updatedMesh.castShadow).toBeFalsy();
+    expect(updatedMesh.receiveShadow).toBeFalsy();
     expect(threeGroup.children.find(mesh => mesh.name === group.meshes[1].id)).toBeDefined();
     expect(Object.keys(materialDict).length).toBe(1);
 });

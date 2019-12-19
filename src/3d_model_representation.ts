@@ -23,4 +23,6 @@ export {Group} from './3d_model_representation/group';
 export {modelGeometry2TreeGeometry,
         modelMaterial2ThreeMaterial,
         modelMesh2ThreeMesh,
-        modelGroup2ThreeGroup} from './3d_model_representation/model2three';
+        modelGroup2ThreeGroup,
+        updateThreeMesh,
+        updateThreeGroup } from './3d_model_representation/model2three';

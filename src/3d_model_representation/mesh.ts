@@ -9,6 +9,9 @@ export class Mesh extends AbstractIdentifiable
     geometry: Geometry;
     material: Material;
 
+    castShadowFlag: boolean = false;
+    receiveShadowFlag: boolean = false;
+
     constructor(geometry: Geometry, material: Material, name: string='mesh')
     {
         super();
@@ -32,6 +35,16 @@ export class Mesh extends AbstractIdentifiable
     withMaterial(material: Material): Mesh
     {
         this.material = material;
+        return this;
+    }
+
+    castShadow(castShadow: boolean = true) {
+        this.castShadowFlag = castShadow;
+        return this;
+    }
+
+    receiveShadow(receiveShadow: boolean = true) {
+        this.receiveShadowFlag = receiveShadow;
         return this;
     }
 
