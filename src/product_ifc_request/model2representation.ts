@@ -40,12 +40,12 @@ function group2RepresentationItems(group: Group,
                                               newTranslation.vector[2]])
                             .withScale(newScale);
     for(let i=0; i<group.meshes.length; ++i) {
-
-        if (group.meshes[i].material != undefined) {
-            let materialName = group.meshes[i].material.name;
+        if (group.meshes[i].material !== undefined) {
+            let materialId = group.meshes[i].material.id;
             let modelMaterial = group.meshes[i].material;
-            if (materials.find(material => material.name === materialName) === undefined) {
-                materials.push(new Material().withName(materialName)
+            if (materials.find(material => material.id === materialId) === undefined) {
+                materials.push(new Material().withId(materialId)
+                                             .withName(modelMaterial.name)
                                              .withColor(new ColorRGBa(modelMaterial.baseColor[0],
                                                                       modelMaterial.baseColor[1],
                                                                       modelMaterial.baseColor[2],
@@ -57,7 +57,7 @@ function group2RepresentationItems(group: Group,
         items.push( 
             new RepresentationItem().withConstructionString(group.meshes[i].geometry.constructionString)
                                     .withTransformation(transformation)
-                                    .withMaterial(group.meshes[i].material.name));
+                                    .withMaterial(group.meshes[i].material.id));
     }
 
     for(let i=0; i<group.children.length; ++i) {

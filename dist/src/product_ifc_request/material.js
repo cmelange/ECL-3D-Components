@@ -12,6 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const typescript_json_serializer_1 = require("typescript-json-serializer");
 const color_rgba_1 = require("./color_rgba");
 let Material = class Material {
+    withId(id) {
+        this.id = id;
+        return this;
+    }
     withName(name) {
         this.name = name;
         return this;
@@ -29,6 +33,10 @@ let Material = class Material {
         return this;
     }
 };
+__decorate([
+    typescript_json_serializer_1.JsonProperty(),
+    __metadata("design:type", String)
+], Material.prototype, "id", void 0);
 __decorate([
     typescript_json_serializer_1.JsonProperty(),
     __metadata("design:type", String)

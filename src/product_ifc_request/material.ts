@@ -5,6 +5,9 @@ import { ColorRGBa } from './color_rgba';
 export class Material
 {
     @JsonProperty()
+    public id: string;
+
+    @JsonProperty()
     public name: string;
 
     @JsonProperty({ type: ColorRGBa})
@@ -18,6 +21,11 @@ export class Material
      */
     @JsonProperty()
     public roughness: number;
+
+    public withId(id: string): Material {
+        this.id = id;
+        return this;
+    }
 
     public withName(name: string): Material {
         this.name = name;

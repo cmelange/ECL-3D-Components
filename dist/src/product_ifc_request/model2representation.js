@@ -31,11 +31,12 @@ function group2RepresentationItems(group, translation, rotation, scale, material
         newTranslation.vector[2]])
         .withScale(newScale);
     for (let i = 0; i < group.meshes.length; ++i) {
-        if (group.meshes[i].material != undefined) {
-            let materialName = group.meshes[i].material.name;
+        if (group.meshes[i].material !== undefined) {
+            let materialId = group.meshes[i].material.id;
             let modelMaterial = group.meshes[i].material;
-            if (materials.find(material => material.name === materialName) === undefined) {
-                materials.push(new material_1.Material().withName(materialName)
+            if (materials.find(material => material.id === materialId) === undefined) {
+                materials.push(new material_1.Material().withId(materialId)
+                    .withName(modelMaterial.name)
                     .withColor(new color_rgba_1.ColorRGBa(modelMaterial.baseColor[0], modelMaterial.baseColor[1], modelMaterial.baseColor[2], modelMaterial.baseColor[3]))
                     .isMetallic(modelMaterial.metallic > 0.5)
                     .withRoughness(modelMaterial.roughness));
@@ -43,7 +44,7 @@ function group2RepresentationItems(group, translation, rotation, scale, material
         }
         items.push(new representation_item_1.RepresentationItem().withConstructionString(group.meshes[i].geometry.constructionString)
             .withTransformation(transformation)
-            .withMaterial(group.meshes[i].material.name));
+            .withMaterial(group.meshes[i].material.id));
     }
     for (let i = 0; i < group.children.length; ++i) {
         items = items.concat(group2RepresentationItems(group.children[i], newTranslation, newRotation, newScale, materials));

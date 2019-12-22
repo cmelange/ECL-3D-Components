@@ -27,7 +27,7 @@ test('model to representation test', () => {
     expect(item0.transformation.rotation[2]).toBeCloseTo(0,5);
     expect(item0.transformation.rotation[3]).toBeCloseTo(0,5);
     expect(item0.transformation.scale).toBe(0.5);
-    expect(item0.material).toBe("material0");
+    expect(item0.material).toBe(material1.id);
 
     let item1: RepresentationItem = representation.representationItems[1];
     expect(item1.constructionString).toBe("construction mesh 2");
@@ -39,7 +39,7 @@ test('model to representation test', () => {
     expect(item1.transformation.rotation[2]).toBeCloseTo(0);
     expect(item1.transformation.rotation[3]).toBeCloseTo(0);
     expect(item1.transformation.scale).toBe(1);
-    expect(item1.material).toBe("material1");
+    expect(item1.material).toBe(material2.id);
 
     expect(representation.materials).toHaveLength(2);
 });
