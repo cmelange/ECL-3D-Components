@@ -54,8 +54,6 @@ test('updateThreeGroup update meshes and materials', () => {
                                     .extrude(1).translate(new Vector3D(1,2,1));
     group.meshes[0].withGeometry(newGeometry)
                    .withMaterial(material1)
-                   .castShadow(false)
-                   .receiveShadow(false);
     group.removeMesh(group.meshes[1].id);
     group.addMesh(new Mesh(geometry, material1));
 

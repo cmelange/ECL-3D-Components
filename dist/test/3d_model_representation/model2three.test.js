@@ -48,9 +48,7 @@ test('updateThreeGroup update meshes and materials', () => {
             new _3d_model_representation_1.Vector2D(1, 0)])])
         .extrude(1).translate(new _3d_model_representation_1.Vector3D(1, 2, 1));
     group.meshes[0].withGeometry(newGeometry)
-        .withMaterial(material1)
-        .castShadow(false)
-        .receiveShadow(false);
+        .withMaterial(material1);
     group.removeMesh(group.meshes[1].id);
     group.addMesh(new _3d_model_representation_1.Mesh(geometry, material1));
     //apply update to threeGroup

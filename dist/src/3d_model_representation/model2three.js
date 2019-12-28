@@ -64,24 +64,24 @@ function modelMaterial2ThreeMaterial(material) {
     return three_material;
 }
 exports.modelMaterial2ThreeMaterial = modelMaterial2ThreeMaterial;
-function modelMesh2ThreeMesh(mesh, materialDict = {}) {
+function modelMesh2ThreeMesh(mesh, materialDict = {}, shadows = false) {
     let three_material = threeMaterialFromList(mesh.material, materialDict);
     let three_geometry = modelGeometry2TreeGeometry(mesh.geometry);
     let three_mesh = new THREE.Mesh(three_geometry, three_material);
     three_mesh.name = mesh.id;
-    three_mesh.castShadow = mesh.castShadowFlag;
-    three_mesh.receiveShadow = mesh.receiveShadowFlag;
+    three_mesh.castShadow = shadows;
+    three_mesh.receiveShadow = shadows;
     return three_mesh;
 }
 exports.modelMesh2ThreeMesh = modelMesh2ThreeMesh;
-function modelGroup2ThreeGroup(group, materialDict = {}) {
+function modelGroup2ThreeGroup(group, materialDict = {}, shadows = false) {
     let three_group = new THREE.Group();
     three_group.name = group.id;
     group.meshes.forEach((mesh) => {
-        three_group.add(modelMesh2ThreeMesh(mesh, materialDict));
+        three_group.add(modelMesh2ThreeMesh(mesh, materialDict, shadows));
     });
     group.children.forEach((group) => {
-        three_group.add(modelGroup2ThreeGroup(group, materialDict));
+        three_group.add(modelGroup2ThreeGroup(group, materialDict, shadows));
     });
     let scale_matrix = new THREE.Matrix4().makeScale(group.scale[0], group.scale[1], group.scale[2]);
     three_group.applyMatrix(scale_matrix);
@@ -91,7 +91,7 @@ function modelGroup2ThreeGroup(group, materialDict = {}) {
     return three_group;
 }
 exports.modelGroup2ThreeGroup = modelGroup2ThreeGroup;
-function updateThreeMesh(threeMesh, modelMesh, materialDict = {}) {
+function updateThreeMesh(threeMesh, modelMesh, materialDict = {}, shadows = false) {
     let threeMaterial = threeMesh.material;
     if (threeMaterial.name !== modelMesh.material.id) {
         //a new material was assigned to this mesh
@@ -101,15 +101,15 @@ function updateThreeMesh(threeMesh, modelMesh, materialDict = {}) {
         //a new geometry was assiged to this mesh
         threeMesh.geometry = modelGeometry2TreeGeometry(modelMesh.geometry);
     }
-    if (threeMesh.castShadow !== modelMesh.castShadowFlag) {
-        threeMesh.castShadow = modelMesh.castShadowFlag;
+    if (threeMesh.castShadow !== shadows) {
+        threeMesh.castShadow = shadows;
     }
-    if (threeMesh.receiveShadow !== modelMesh.receiveShadowFlag) {
-        threeMesh.receiveShadow = modelMesh.receiveShadowFlag;
+    if (threeMesh.receiveShadow !== shadows) {
+        threeMesh.receiveShadow = shadows;
     }
 }
 exports.updateThreeMesh = updateThreeMesh;
-function updateThreeGroup(threeGroup, modelGroup, materialDict = {}) {
+function updateThreeGroup(threeGroup, modelGroup, materialDict = {}, shadows = false) {
     //verify group transformation
     let EPS = 1e-5;
     let radX = math_1.toRadians(modelGroup.rotation[0]);
@@ -154,24 +154,24 @@ function updateThreeGroup(threeGroup, modelGroup, materialDict = {}) {
     modelGroup.meshes.forEach((mesh) => {
         if (mesh.id in threeObjectDict) {
             //mesh already exists -> update mesh
-            updateThreeMesh(threeObjectDict[mesh.id], mesh, materialDict);
+            updateThreeMesh(threeObjectDict[mesh.id], mesh, materialDict, shadows);
             delete threeObjectDict[mesh.id]; //remove from objectList because fully processed
         }
         else {
             //mesh doesn't exist yet -> add mesh
-            threeGroup.add(modelMesh2ThreeMesh(mesh, materialDict));
+            threeGroup.add(modelMesh2ThreeMesh(mesh, materialDict, shadows));
         }
     });
     //process all child groups in the group
     modelGroup.children.forEach((group) => {
         if (group.id in threeObjectDict) {
             //group already exists -> update group
-            updateThreeGroup(threeObjectDict[group.id], group, materialDict);
+            updateThreeGroup(threeObjectDict[group.id], group, materialDict, shadows);
             delete threeObjectDict[group.id]; //remove from objectList because fully processed
         }
         else {
             //group doesn't exist yet -> add group
-            threeGroup.add(modelGroup2ThreeGroup(group, materialDict));
+            threeGroup.add(modelGroup2ThreeGroup(group, materialDict, shadows));
         }
     });
     //remove all objects that are no longer in the model
