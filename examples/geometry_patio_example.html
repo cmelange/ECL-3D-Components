@@ -1,287 +1,295 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>Geometry example of patio covering</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    </head>
-    <body>
-        <script src="../build/ecl_3d.js"></script>
-        <script src="./js/TrackballControls.js"></script>
-        <script src="./js/dat.gui.min.js"></script>
-        <script>
-
-            function Covering() {
-                this.height = 2.0;
-                this.width = 2.5;
-                this.length = 3.5;
-
-                this.materialDict = {};
-
-                this.profileMaterialModel = new Model3D.Material('profile_material').withRoughness(0.25)
-                                                                                    .withMetallic(0);
-                this.pillarProfile = new Model3D.Polyline2D([new Model3D.Vector2D(0, 0), new Model3D.Vector2D(0, 0.15),
-                                                             new Model3D.Vector2D(0.15, 0.15), new Model3D.Vector2D(0.15, 0),
-                                                             new Model3D.Vector2D(0, 0)]).shape();
-                this.sleeperProfile = new Model3D.Polyline2D([new Model3D.Vector2D(0, 0), new Model3D.Vector2D(0, 0.15),
-                                                              new Model3D.Vector2D(0.25, 0.15), new Model3D.Vector2D(0.25, 0),
-                                                              new Model3D.Vector2D(0, 0)]).shape();
-                this.bladeProfile = new Model3D.Polyline2D([new Model3D.Vector2D(-0.15, -0.025), new Model3D.Vector2D(-0.15, 0.025),
-                                                            new Model3D.Vector2D(0.15, 0.025), new Model3D.Vector2D(0.15, -0.025),
-                                                            new Model3D.Vector2D(-0.15, -0.025)]).shape();
                 this.modelGroup = this.generateCovering()
-                this.threeGroup = Model3D.modelGroup2ThreeGroup(this.modelGroup, this.materialDict, true);
 
-                this.ifcDownload = function(group = this.modelGroup) {
-                    let productIfcRequest =
-                        new Model3D.ProductIfcRequest()
-                                   .withProject(new Model3D.Project()
-                                                           .withName("Patio covering example"))
-                                   .withOwner(new Model3D.OwnerHistory())
-                                   .withProduct(new Model3D.Product()
-                                                       .withName("patio covering")
-                                                       .addRepresentation(Model3D.group2Representation(group)));
-                    let url = "http://localhost:5000/api/create-ifc/product/" + "patio-covering";
-                    fetch(url, 
-                          {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json;charset=utf-8'
-                            },
-                            body: JSON.stringify(productIfcRequest.serialize())
-                          })
-                        .then(function(response) {
-                            return response.blob().then((blob) => {
-                                let link = document.createElement("a");
-                                link.href = URL.createObjectURL(blob);
-                                link.setAttribute("download", "patio-covering.ifc");
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                            });
+<head>
+    <title>Geometry example of patio covering</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+    <script src="../build/ecl_3d.js"></script>
+    <script src="./js/OrbitControls.js"></script>
+    <script src="./js/dat.gui.min.js"></script>
+    <script>
+
+        function Covering() {
+            this.height = 2.0;
+            this.width = 2.5;
+            this.length = 3.5;
+
+            this.materialDict = {};
+
+            //     this.pillarProfile = new Model3D.Polyline2D([new Model3D.Vector2D(0, 0), new Model3D.Vector2D(0.06, 0),
+            // new Model3D.Vector2D(0.06, 0.015), new Model3D.Vector2D(0.09, 0.045),
+            // new Model3D.Vector2D(0.105, 0.045), new Model3D.Vector2D(0.105, 0.105),
+            // new Model3D.Vector2D(0.09, 0.105), new Model3D.Vector2D(0.06, 0.135),
+            // new Model3D.Vector2D(0.06, 0.15), new Model3D.Vector2D(0, 0.15),
+            // new Model3D.Vector2D(0, 0.135), new Model3D.Vector2D(-0.03, 0.105),
+            // new Model3D.Vector2D(-0.045, 0.105), new Model3D.Vector2D(-0.045, 0.045),
+            // new Model3D.Vector2D(-0.03, 0.045), new Model3D.Vector2D(0, 0.015),
+            // new Model3D.Vector2D(0, 0)]).shape();
+
+            this.profileMaterialModel = new Model3D.Material('profile_material').withRoughness(0.25)
+                .withMetallic(0);
+            this.pillarProfile = new Model3D.Polyline2D([new Model3D.Vector2D(0, 0), new Model3D.Vector2D(0, 0.15),
+            new Model3D.Vector2D(0.15, 0.15), new Model3D.Vector2D(0.15, 0),
+            new Model3D.Vector2D(0, 0)]).shape();
+            this.sleeperProfile = new Model3D.Polyline2D([new Model3D.Vector2D(0, 0), new Model3D.Vector2D(0, 0.15),
+            new Model3D.Vector2D(0.25, 0.15), new Model3D.Vector2D(0.25, 0),
+            new Model3D.Vector2D(0, 0)]).shape();
+            this.bladeProfile = new Model3D.Polyline2D([new Model3D.Vector2D(-0.15, -0.025), new Model3D.Vector2D(-0.15, 0.025),
+            new Model3D.Vector2D(0.15, 0.025), new Model3D.Vector2D(0.15, -0.025),
+            new Model3D.Vector2D(-0.15, -0.025)]).shape();
+            this.modelGroup = this.generateCovering()
+            this.threeGroup = Model3D.modelGroup2ThreeGroup(this.modelGroup, this.materialDict, true);
+
+            this.ifcDownload = function (group = this.modelGroup) {
+                let productIfcRequest =
+                    new Model3D.ProductIfcRequest()
+                        .withProject(new Model3D.Project()
+                            .withName("Patio covering example"))
+                        .withOwner(new Model3D.OwnerHistory())
+                        .withProduct(new Model3D.Product()
+                            .withName("patio covering")
+                            .addRepresentation(Model3D.group2Representation(group)));
+                let url = "http://localhost:5000/api/create-ifc/product/" + "patio-covering";
+                fetch(url,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8'
+                        },
+                        body: JSON.stringify(productIfcRequest.serialize())
+                    })
+                    .then(function (response) {
+                        return response.blob().then((blob) => {
+                            let link = document.createElement("a");
+                            link.href = URL.createObjectURL(blob);
+                            link.setAttribute("download", "patio-covering.ifc");
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
                         });
-                }
-            };
+                    });
+            }
+        };
 
-            Covering.prototype.generatePillar = function()
-            {
-                return this.pillarProfile.extrude(-this.height);
+        Covering.prototype.generatePillar = function () {
+            return this.pillarProfile.extrude(-this.height);
+        }
+
+        Covering.prototype.generateSpan = function () {
+            return this.sleeperProfile.extrude(this.width - 0.30).rotate([0, 90, 0])
+                .translate(new Model3D.Vector3D(0.15, 0, 0));
+        }
+
+        Covering.prototype.generatePivot = function () {
+            return this.sleeperProfile.extrude(this.length - 0.30).rotate([-90, 0, 90])
+                .translate(new Model3D.Vector3D(0.15, 0.15, 0));
+        }
+
+        Covering.prototype.generateBlade = function () {
+            return this.bladeProfile.extrude(this.width - 0.30).rotate([90, 90, 45])
+                .translate(new Model3D.Vector3D(0.15, 0, -0.25 / 2));
+        }
+
+        Covering.prototype.generateCover = function () {
+            let numBlades = Math.floor((this.length - 0.3) / 0.3);
+            let coverWidth = this.length - 2 * 0.15 - numBlades * 0.3;
+            if (coverWidth > 0.05) {
+                let coverProfile = new Model3D.Polyline2D([new Model3D.Vector2D(0.025, 0), new Model3D.Vector2D(-0.025, 0),
+                new Model3D.Vector2D(-0.025, -coverWidth), new Model3D.Vector2D(0.025, -coverWidth),
+                new Model3D.Vector2D(0.025, 0)]).shape();
+                let coverGeom = coverProfile.extrude(this.width - 0.30)
+                    .rotate([0, 90, 0])
+                    .translate(new Model3D.Vector3D(0.15, this.length - 0.15, -0.25 / 2));
+                return new Model3D.Group('cover').addMesh(new Model3D.Mesh(coverGeom, this.profileMaterialModel, 'coverMesh'));
+            }
+            else {
+                return undefined;
+            }
+        }
+
+        Covering.prototype.generateCovering = function () {
+            let topLevel = new Model3D.Group('top');
+
+            // == add pillars ==
+            let pillarGeom = this.generatePillar();
+            let pillar0 = new Model3D.Group('pillar0').addMesh(new Model3D.Mesh(pillarGeom, this.profileMaterialModel, 'pillar0Mesh'));
+            let pillar1 = new Model3D.Group('pillar1').addMesh(new Model3D.Mesh(pillarGeom, this.profileMaterialModel, 'pillar1Mesh'))
+                .withTranslation(new Model3D.Vector3D(this.width - 0.15, 0, 0));
+            let pillar2 = new Model3D.Group('pillar2').addMesh(new Model3D.Mesh(pillarGeom, this.profileMaterialModel, 'pillar2Mesh'))
+                .withTranslation(new Model3D.Vector3D(this.width - 0.15, this.length - 0.15, 0));
+            let pillar3 = new Model3D.Group('pillar3').addMesh(new Model3D.Mesh(pillarGeom, this.profileMaterialModel, 'pillar3Mesh'))
+                .withTranslation(new Model3D.Vector3D(0, this.length - 0.15, 0));
+            topLevel.addGroup(pillar0)
+                .addGroup(pillar1)
+                .addGroup(pillar2)
+                .addGroup(pillar3);
+
+            // == add spans ==
+            let spanGeom = this.generateSpan();
+            let span0 = new Model3D.Group('span0').addMesh(new Model3D.Mesh(spanGeom, this.profileMaterialModel, 'span0Mesh'));
+            let span1 = new Model3D.Group('span1').addMesh(new Model3D.Mesh(spanGeom, this.profileMaterialModel, 'span1Mesh'))
+                .withTranslation(new Model3D.Vector3D(0, this.length - 0.15, 0));
+            topLevel.addGroup(span0)
+                .addGroup(span1);
+
+            // == add pivots ==
+            let pivotGeom = this.generatePivot();
+            let pivot0 = new Model3D.Group('pivot0').addMesh(new Model3D.Mesh(pivotGeom, this.profileMaterialModel, 'pivot0Mesh'));
+            let pivot1 = new Model3D.Group('pivot1').addMesh(new Model3D.Mesh(pivotGeom, this.profileMaterialModel, 'pivot1Mesh'))
+                .withTranslation(new Model3D.Vector3D(this.width - 0.15, 0, 0));
+            topLevel.addGroup(pivot0)
+                .addGroup(pivot1);
+
+            // == add blades ==
+            let bladeGeom = this.generateBlade();
+            let blades = new Model3D.Group('blades');
+            let numBlades = Math.floor((this.length - 0.3) / 0.3);
+            for (let i = 0; i < numBlades; ++i) {
+                let blade = new Model3D.Group('blade' + i).addMesh(new Model3D.Mesh(bladeGeom, this.profileMaterialModel, 'blade' + i + 'Mesh'))
+                    .withTranslation(new Model3D.Vector3D(0, 0.15 + (i + 0.5) * 0.3, 0));
+                blades.addGroup(blade);
+            }
+            topLevel.addGroup(blades);
+            let cover = this.generateCover();
+            if (cover != undefined) {
+                topLevel.addGroup(cover);
             }
 
-            Covering.prototype.generateSpan = function()
-            {
-                return this.sleeperProfile.extrude(this.width-0.30).rotate([0,90,0])
-                                                                   .translate(new Model3D.Vector3D(0.15,0,0));
+            topLevel.withTranslation(new Model3D.Vector3D(-this.width / 2, -this.length / 2, this.height));
+
+            return topLevel;
+        }
+
+        var covering = new Covering();
+        var gui = new dat.GUI();
+        var heightController = gui.add(covering, 'height', 1.5, 2.5, 0.01).name('Height');
+        var widthController = gui.add(covering, 'width', 1.5, 4, 0.01).name('Width');
+        var lengthController = gui.add(covering, 'length', 1.5, 6, 0.01).name('Length');
+        gui.add(covering, 'ifcDownload').name('Download IFC file');
+
+        heightController.onChange(function (value) {
+            for (let i = 0; i < 4; ++i) {
+                let pillarModel = covering.modelGroup.findGroupByName('pillar' + i)
+                pillarModel.meshes[0].geometry = covering.generatePillar();
             }
+            Model3D.updateThreeGroup(covering.threeGroup, covering.modelGroup, covering.materialDict, true);
+            covering.threeGroup.position.z = value;
+        });
 
-            Covering.prototype.generatePivot = function()
-            {
-                return this.sleeperProfile.extrude(this.length-0.30).rotate([-90,0,90])
-                                                                    .translate(new Model3D.Vector3D(0.15,0.15,0));
+        widthController.onChange(function (value) {
+            for (let i = 0; i < 2; ++i) {
+                let spanModel = covering.modelGroup.findGroupByName('span' + i);
+                spanModel.meshes[0].geometry = covering.generateSpan();
             }
-
-            Covering.prototype.generateBlade = function()
-            {
-                return this.bladeProfile.extrude(this.width-0.30).rotate([90,90,45])
-                                                                 .translate(new Model3D.Vector3D(0.15,0,-0.25/2));
+            for (let i = 1; i < 3; ++i) {
+                let pillarModel = covering.modelGroup.findGroupByName('pillar' + i);
+                pillarModel.translation.vector[0] = value - 0.15;
             }
-
-            Covering.prototype.generateCover = function()
-            {
-                let numBlades = Math.floor((this.length - 0.3) / 0.3);
-                let coverWidth = this.length - 2*0.15 - numBlades*0.3;
-                if (coverWidth > 0.05) {
-                    let coverProfile = new Model3D.Polyline2D([new Model3D.Vector2D(0.025, 0), new Model3D.Vector2D(-0.025, 0),
-                                                               new Model3D.Vector2D(-0.025, -coverWidth), new Model3D.Vector2D(0.025, -coverWidth),
-                                                               new Model3D.Vector2D(0.025, 0)]).shape();
-                    let coverGeom  = coverProfile.extrude(this.width-0.30)
-                                                 .rotate([0,90,0])
-                                                 .translate(new Model3D.Vector3D(0.15,this.length-0.15,-0.25/2));
-                    return new Model3D.Group('cover').addMesh(new Model3D.Mesh(coverGeom, this.profileMaterialModel, 'coverMesh'));
-                }
-                else {
-                    return undefined;
-                }
+            let bladesModel = covering.modelGroup.findGroupByName('blades');
+            for (let i = 0; i < bladesModel.children.length; ++i) {
+                bladesModel.children[i].meshes[0].geometry = covering.generateBlade();
             }
-
-            Covering.prototype.generateCovering = function()
-            {
-                let topLevel = new Model3D.Group('top');
-               
-                // == add pillars ==
-                let pillarGeom = this.generatePillar();
-                let pillar0 = new Model3D.Group('pillar0').addMesh(new Model3D.Mesh(pillarGeom, this.profileMaterialModel, 'pillar0Mesh'));
-                let pillar1 = new Model3D.Group('pillar1').addMesh(new Model3D.Mesh(pillarGeom, this.profileMaterialModel, 'pillar1Mesh'))
-                                                          .withTranslation(new Model3D.Vector3D(this.width-0.15, 0,0));
-                let pillar2 = new Model3D.Group('pillar2').addMesh(new Model3D.Mesh(pillarGeom, this.profileMaterialModel, 'pillar2Mesh'))
-                                                          .withTranslation(new Model3D.Vector3D(this.width-0.15, this.length-0.15,0));
-                let pillar3 = new Model3D.Group('pillar3').addMesh(new Model3D.Mesh(pillarGeom, this.profileMaterialModel, 'pillar3Mesh'))
-                                                          .withTranslation(new Model3D.Vector3D(0, this.length-0.15,0));
-                topLevel.addGroup(pillar0)
-                        .addGroup(pillar1)
-                        .addGroup(pillar2)
-                        .addGroup(pillar3);
-
-                // == add spans ==
-                let spanGeom = this.generateSpan();
-                let span0 = new Model3D.Group('span0').addMesh(new Model3D.Mesh(spanGeom, this.profileMaterialModel, 'span0Mesh'));
-                let span1 = new Model3D.Group('span1').addMesh(new Model3D.Mesh(spanGeom, this.profileMaterialModel, 'span1Mesh'))
-                                                      .withTranslation(new Model3D.Vector3D(0,this.length-0.15,0));
-                topLevel.addGroup(span0)
-                        .addGroup(span1);
-
-                // == add pivots ==
-                let pivotGeom = this.generatePivot();
-                let pivot0 = new Model3D.Group('pivot0').addMesh(new Model3D.Mesh(pivotGeom, this.profileMaterialModel, 'pivot0Mesh'));
-                let pivot1 = new Model3D.Group('pivot1').addMesh(new Model3D.Mesh(pivotGeom, this.profileMaterialModel, 'pivot1Mesh'))
-                                                        .withTranslation(new Model3D.Vector3D(this.width-0.15,0,0));
-                topLevel.addGroup(pivot0)
-                        .addGroup(pivot1);
-
-                // == add blades ==
-                let bladeGeom = this.generateBlade();
-                let blades = new Model3D.Group('blades');
-                let numBlades = Math.floor((this.length - 0.3) / 0.3);
-                for (let i=0; i< numBlades; ++i)
-                {
-                    let blade = new Model3D.Group('blade' + i).addMesh(new Model3D.Mesh(bladeGeom, this.profileMaterialModel, 'blade' + i + 'Mesh'))
-                                                              .withTranslation(new Model3D.Vector3D(0,0.15+(i+0.5)*0.3,0));
-                    blades.addGroup(blade);
-                }
-                topLevel.addGroup(blades);
-                let cover = this.generateCover();
-                if (cover != undefined) {
-                    topLevel.addGroup(cover);
-                }
-                
-                topLevel.withTranslation(new Model3D.Vector3D(-this.width/2, -this.length/2, this.height));
-
-                return topLevel;
+            covering.modelGroup.findGroupByName('pivot1').translation.vector[0] = value - 0.15;
+            let modelCover = covering.modelGroup.findGroupByName('cover');
+            if (modelCover !== undefined) {
+                covering.modelGroup.removeGroup(modelCover.id);
+                covering.modelGroup.addGroup(covering.generateCover());
+                console.log(covering.modelGroup);
             }
-  
-            var covering = new Covering();
-            var gui = new dat.GUI();
-            var heightController = gui.add(covering, 'height', 1.5, 2.5, 0.01).name('Height');
-            var widthController = gui.add(covering, 'width', 1.5, 4, 0.01).name('Width');
-            var lengthController = gui.add(covering, 'length', 1.5, 6, 0.01).name('Length');
-            gui.add(covering, 'ifcDownload').name('Download IFC file');
+            covering.modelGroup.translation.vector[0] = -value / 2;
+            Model3D.updateThreeGroup(covering.threeGroup, covering.modelGroup, covering.materialDict, true);
+        });
 
-            heightController.onChange(function(value) {
-                for (let i=0; i<4; ++i) {
-                    let pillarModel = covering.modelGroup.findGroupByName('pillar' + i)
-                    pillarModel.meshes[0].geometry = covering.generatePillar();
-                }
-                Model3D.updateThreeGroup(covering.threeGroup, covering.modelGroup, covering.materialDict, true);
-                covering.threeGroup.position.z = value;
-            });
+        lengthController.onChange(function (value) {
+            for (let i = 0; i < 2; ++i) {
+                let pivotModel = covering.modelGroup.findGroupByName('pivot' + i);
+                pivotModel.meshes[0].geometry = covering.generatePivot();
+            }
+            for (let i = 2; i < 4; ++i) {
+                let pillarModel = covering.modelGroup.findGroupByName('pillar' + i);
+                pillarModel.translation.vector[1] = value - 0.15;
+            }
+            covering.modelGroup.findGroupByName('span1').translation.vector[1] = value - 0.15;
+            let bladesModel = covering.modelGroup.findGroupByName('blades');
+            let numBlades = Math.floor((covering.length - 0.3) / 0.3);
+            for (let i = bladesModel.children.length; i < numBlades; ++i) {
+                let blade = new Model3D.Group('blade' + i).addMesh(new Model3D.Mesh(covering.generateBlade(), covering.profileMaterialModel, 'blade' + i + 'Mesh'))
+                    .withTranslation(new Model3D.Vector3D(0, 0.15 + (i + 0.5) * 0.3, 0));
+                bladesModel.addGroup(blade);
+            }
+            for (let i = numBlades; i < bladesModel.children.length; ++i) {
+                bladesModel.removeGroup(bladesModel.children[i].id);
+            }
+            let cover = covering.generateCover();
+            let modelCover = covering.modelGroup.findGroupByName('cover');
+            if (modelCover !== undefined) {
+                covering.modelGroup.removeGroup(modelCover.id);
+            }
+            if (cover !== undefined) {
+                covering.modelGroup.addGroup(cover);
+            }
+            covering.modelGroup.translation.vector[1] = -value / 2;
+            Model3D.updateThreeGroup(covering.threeGroup, covering.modelGroup, covering.materialDict, true);
+        });
 
-            widthController.onChange(function(value) {
-                for (let i=0; i<2; ++i) {
-                    let spanModel = covering.modelGroup.findGroupByName('span' + i);
-                    spanModel.meshes[0].geometry = covering.generateSpan();
-                }
-                for (let i=1; i<3; ++i) {
-                    let pillarModel = covering.modelGroup.findGroupByName('pillar' + i);
-                    pillarModel.translation.vector[0] = value - 0.15;
-                }
-                let bladesModel = covering.modelGroup.findGroupByName('blades');
-                for (let i =0; i<bladesModel.children.length; ++i) {
-                    bladesModel.children[i].meshes[0].geometry = covering.generateBlade();
-                }
-                covering.modelGroup.findGroupByName('pivot1').translation.vector[0] = value - 0.15;
-                let modelCover = covering.modelGroup.findGroupByName('cover');             
-                if (modelCover !== undefined) {
-                    covering.modelGroup.removeGroup(modelCover.id);
-                    covering.modelGroup.addGroup(covering.generateCover());
-                    console.log(covering.modelGroup);
-                }
-                covering.modelGroup.translation.vector[0] = -value/2;
-                Model3D.updateThreeGroup(covering.threeGroup, covering.modelGroup, covering.materialDict, true);
-            });
+        /* === Set up 3D rendering environment === */
+        var scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xdde8ed);
+        scene.fog = new THREE.Fog(scene.background, 5, 20);
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.001, 100);
+        var renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-            lengthController.onChange(function(value) {
-                for (let i=0; i<2; ++i) {
-                    let pivotModel = covering.modelGroup.findGroupByName('pivot' + i);
-                    pivotModel.meshes[0].geometry = covering.generatePivot();
-                }
-                for (let i=2; i<4; ++i) {
-                    let pillarModel = covering.modelGroup.findGroupByName('pillar' + i);
-                    pillarModel.translation.vector[1] = value - 0.15;
-                }
-                covering.modelGroup.findGroupByName('span1').translation.vector[1] = value - 0.15;
-                let bladesModel = covering.modelGroup.findGroupByName('blades');
-                let numBlades = Math.floor((covering.length - 0.3) / 0.3);
-                for (let i= bladesModel.children.length; i < numBlades; ++i )
-                {
-                    let blade = new Model3D.Group('blade' + i).addMesh(new Model3D.Mesh(covering.generateBlade(), covering.profileMaterialModel, 'blade' + i + 'Mesh'))
-                                                              .withTranslation(new Model3D.Vector3D(0,0.15+(i+0.5)*0.3,0));
-                    bladesModel.addGroup(blade);
-                }
-                for (let i=numBlades; i < bladesModel.children.length; ++i)
-                {
-                    bladesModel.removeGroup(bladesModel.children[i].id);
-                }
-                let cover = covering.generateCover();
-                let modelCover = covering.modelGroup.findGroupByName('cover');
-                if (modelCover !== undefined) {
-                    covering.modelGroup.removeGroup(modelCover.id);
-                }
-                if (cover !== undefined) {
-                    covering.modelGroup.addGroup(cover);
-                }
-                covering.modelGroup.translation.vector[1] = -value/2;
-                Model3D.updateThreeGroup(covering.threeGroup, covering.modelGroup, covering.materialDict, true);
-            });
+        /* === Calculate light and camera positions === */
+        camera.up = new THREE.Vector3(0, 1, 0);
+        controls.object.position.set(1.5 * covering.width, covering.length, 5);
+        controls.target = new THREE.Vector3(0, 0, 0);
+        controls.update();
+        scene.add(new THREE.AmbientLight(0xbbbbbb));
+        var light = new THREE.DirectionalLight(0xffffff, 0.4);
+        //var light = new THREE.PointLight( 0xffffff, 1, 50 );
+        light.position.set(3 * covering.width, covering.length / 2, 6 * covering.height);
+        light.lookAt(0, 0, 0);
+        light.castShadow = true;
+        light.shadow.mapSize.width = 2048;
+        light.shadow.mapSize.height = 2048;
+        light.shadow.camera.near = 0.5
+        light.shadow.camera.far = 100;
+        scene.add(light);
 
-            /* === Set up 3D rendering environment === */
-            var scene = new THREE.Scene();
-            scene.background = new THREE.Color( 0xdde8ed );
-            scene.fog = new THREE.Fog( scene.background, 5, 20 );
-            var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.001, 100 );
-            var renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize( window.innerWidth, window.innerHeight );
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            document.body.appendChild( renderer.domElement );
-            controls = new THREE.TrackballControls(camera, renderer.domElement);
-                      
-            /* === Calculate light and camera positions === */
-            camera.up = new THREE.Vector3(0,0,1);
-            controls.object.position.set(1.5*covering.width, -covering.length, 0.5);
-            controls.target = new THREE.Vector3(0, 0, 1);
-            scene.add( new THREE.AmbientLight( 0xbbbbbb ) );
-            var light = new THREE.DirectionalLight( 0xffffff, 0.4 );
-            //var light = new THREE.PointLight( 0xffffff, 1, 50 );
-            light.position.set(3*covering.width, covering.length/2, 6*covering.height);
-            light.lookAt(0, 0, 0);
-            light.castShadow = true;
-            light.shadow.mapSize.width = 2048;
-            light.shadow.mapSize.height = 2048;
-            light.shadow.camera.near = 0.5
-            light.shadow.camera.far = 100;
-            scene.add( light );
+        /* === add ground plane === */
+        var groundGeometry = new THREE.PlaneBufferGeometry(50, 50, 2, 2);
+        var planeMaterial = new THREE.MeshLambertMaterial({ color: 0xc2cdd1 });
+        var ground = new THREE.Mesh(groundGeometry, planeMaterial);
+        ground.receiveShadow = true;
+        scene.add(ground);
 
-            /* === add ground plane === */
-            var groundGeometry = new THREE.PlaneBufferGeometry(50, 50, 2, 2);
-            var planeMaterial = new THREE.MeshLambertMaterial( { color: 0xc2cdd1 } );
-            var ground = new THREE.Mesh( groundGeometry, planeMaterial );
-    		ground.receiveShadow = true;
-            scene.add(ground);
 
-            /* === add fog === */
-            
+        /* === add fog === */
 
-            /* === Add covering to scene === */
-            scene.add(covering.threeGroup);
 
-            var animate = function () {
-                        requestAnimationFrame( animate );
-                        controls.update();
-                        renderer.render( scene, camera );
-                };
+        /* === Add covering to scene === */
+        ground.add(covering.threeGroup);
+        ground.rotateX(-Math.PI / 2);
 
-            animate();
-            
-        </script>
-    </body>
+        var animate = function () {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        };
+
+        animate();
+
+    </script>
+</body>
+
 </html>
