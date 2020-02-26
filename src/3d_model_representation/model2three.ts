@@ -102,14 +102,14 @@ export function modelGroup2ThreeGroup(group: Group,
     let scale_matrix = new THREE.Matrix4().makeScale(group.scale[0],
                                                      group.scale[1],
                                                      group.scale[2]);
-    three_group.applyMatrix(scale_matrix);
+    three_group.applyMatrix4(scale_matrix);
     three_group.setRotationFromEuler(new THREE.Euler(toRadians(group.rotation[0]),
                                                      toRadians(group.rotation[1]),
                                                      toRadians(group.rotation[2])));
     let translation_matrix = new THREE.Matrix4().makeTranslation(group.translation.vector[0],
                                                                  group.translation.vector[1],
                                                                  group.translation.vector[2]);
-    three_group.applyMatrix(translation_matrix);
+    three_group.applyMatrix4(translation_matrix);
     return three_group;
 }
 
@@ -156,7 +156,7 @@ export function updateThreeGroup(threeGroup: THREE.Group,
         //reset rotation so that scale is applied on local axis
         threeGroup.setRotationFromQuaternion(new Quaternion(1,0,0,0))
         //apply scale
-        threeGroup.applyMatrix(scaleMatrix);
+        threeGroup.applyMatrix4(scaleMatrix);
     }
     //rotation
     if ((Math.abs(threeGroup.rotation.x - radX) > EPS) ||
@@ -177,7 +177,7 @@ export function updateThreeGroup(threeGroup: THREE.Group,
         let translationMatrix = new THREE.Matrix4().makeTranslation(diffTranslation.vector[0],
                                                                      diffTranslation.vector[1],
                                                                      diffTranslation.vector[2]);
-        threeGroup.applyMatrix(translationMatrix);
+        threeGroup.applyMatrix4(translationMatrix);
     }
 
     //clear active flags for materials in materialDict
