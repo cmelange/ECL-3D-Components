@@ -1,6 +1,13 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const csg = require("@jscad/csg");
+const csg = __importStar(require("@jscad/csg"));
 const abstract_identifiable_1 = require("./abstract_identifiable");
 class Geometry extends abstract_identifiable_1.AbstractIdentifiable {
     constructor(geometry, constructionString = '', name = 'geometry') {

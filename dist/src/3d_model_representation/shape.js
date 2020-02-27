@@ -1,7 +1,14 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const geometry_1 = require("./geometry");
-const csg = require("@jscad/csg");
+const csg = __importStar(require("@jscad/csg"));
 class Shape {
     constructor(paths) {
         this.paths = [];

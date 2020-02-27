@@ -1,6 +1,13 @@
 "use strict";
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const THREE = require("three");
+const THREE = __importStar(require("three"));
 const model_three_material_container_1 = require("./model_three_material_container");
 const math_1 = require("./math");
 const vector3d_1 = require("./vector3d");
@@ -44,9 +51,9 @@ function modelGeometry2TreeGeometry(geometry) {
     function disposeArray() {
         this.array = null;
     }
-    three_geometry.addAttribute('position', new THREE.Float32BufferAttribute(positions, 3).onUpload(disposeArray));
-    three_geometry.addAttribute('normal', new THREE.Float32BufferAttribute(normals, 3).onUpload(disposeArray));
-    three_geometry.addAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2).onUpload(disposeArray));
+    three_geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3).onUpload(disposeArray));
+    three_geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3).onUpload(disposeArray));
+    three_geometry.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2).onUpload(disposeArray));
     return three_geometry;
 }
 exports.modelGeometry2TreeGeometry = modelGeometry2TreeGeometry;

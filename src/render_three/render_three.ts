@@ -1,6 +1,8 @@
 import Canvas from './MockCanvas';
 import * as THREE from 'three';
 import { Stream, Duplex } from 'stream';
+import Gl from 'gl';
+import PNGJS from 'pngjs';
 
 export function renderThreeSceneToPdf(scene: THREE.Scene,
                                       camera: THREE.Camera,
@@ -8,7 +10,7 @@ export function renderThreeSceneToPdf(scene: THREE.Scene,
                                       renderHeight: number): Duplex
 {
     //--Renderer
-    const glContext = require('gl')(100,100);
+    const glContext = Gl(100,100);
     let canvasGL = new Canvas();
     let renderer = new THREE.WebGLRenderer( { context: glContext,
                                               antialias: true,
@@ -25,7 +27,7 @@ export function renderThreeSceneToPdf(scene: THREE.Scene,
     let gl = renderer.getContext()
     let pixels = new Uint8Array(4 * renderWidth * renderHeight)
     gl.readPixels(0, 0, renderWidth, renderHeight, gl.RGBA, gl.UNSIGNED_BYTE, pixels)
-    const PNG = require('pngjs').PNG;
+    const PNG = PNGJS.PNG;
     var png = new PNG({ width: renderWidth, height: renderHeight });
     // lines are vertically flipped in the FBO / need to unflip them
     for (var j=0; j<renderHeight; j++)
