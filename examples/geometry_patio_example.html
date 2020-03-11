@@ -65,7 +65,8 @@
 
             Covering.prototype.generatePillar = function()
             {
-                return this.pillarProfile.extrude(-this.height);
+                return this.pillarProfile.extrude(this.height)
+                                         .translate(new Model3D.Vector3D(0,0,-this.height));
             }
 
             Covering.prototype.generateSpan = function()
