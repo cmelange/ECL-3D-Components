@@ -1,13 +1,5 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const csg = __importStar(require("@jscad/csg"));
 const abstract_identifiable_1 = require("./abstract_identifiable");
 class Geometry extends abstract_identifiable_1.AbstractIdentifiable {
     constructor(geometry, constructionString = '', name = 'geometry') {
@@ -36,7 +28,7 @@ class Geometry extends abstract_identifiable_1.AbstractIdentifiable {
         return this;
     }
     copy() {
-        return new Geometry(csg.clone(this.geometry), this.name, this._constructionString);
+        return new Geometry(this.clone(this.geometry), this._constructionString, this.name);
     }
     /**
      * Clip the geometry by a plane. Retuns the solid on the back side of the plane
@@ -68,6 +60,23 @@ class Geometry extends abstract_identifiable_1.AbstractIdentifiable {
             this._constructionString + ".INTERSECTION(" + geometry.constructionString + ")";
         this.geometry = this.geometry.intersect(geometry.geometry);
         return this;
+    }
+    /** clone the given object
+     * @param {Object} obj - the object to clone by
+     * @returns {CSG} new CSG object , a copy of the input
+     *
+     * @example
+     * let copy = clone(sphere())
+     */
+    clone(obj) {
+        if (obj === null || typeof obj !== 'object')
+            return obj;
+        var copy = obj.constructor();
+        for (var attr in obj) {
+            if (obj.hasOwnProperty(attr))
+                copy[attr] = obj[attr];
+        }
+        return copy;
     }
 }
 exports.Geometry = Geometry;

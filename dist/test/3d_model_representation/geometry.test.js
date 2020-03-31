@@ -62,3 +62,14 @@ test('geometry intersection constructionString test', () => {
     expect(unionGeometry.constructionString)
         .toBe("SHAPE({POLYLINE2D([[0,0],[0,1],[1,1],[1,0]])}).EXTRUDE(1).INTERSECTION(SHAPE({POLYLINE2D([[0,0],[0,1],[1,1],[1,0]])}).EXTRUDE(1))");
 });
+test('copy geometry test', () => {
+    let polygon = new shape_1.Shape([new polyline2d_1.Polyline2D([new vector2d_1.Vector2D(0, 0),
+            new vector2d_1.Vector2D(0, 1),
+            new vector2d_1.Vector2D(1, 1),
+            new vector2d_1.Vector2D(1, 0)])]);
+    let extrudedGeometry = polygon.extrude(1);
+    let copiedGeometry = extrudedGeometry.copy();
+    expect(copiedGeometry.name).toEqual(extrudedGeometry.name);
+    expect(copiedGeometry.constructionString).toEqual(extrudedGeometry.constructionString);
+    expect(copiedGeometry.geometry).toEqual(extrudedGeometry.geometry);
+});

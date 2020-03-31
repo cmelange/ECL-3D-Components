@@ -1,6 +1,5 @@
 import {Vector3D} from './vector3d';
 import {Plane} from './plane';
-import * as csg from '@jscad/csg';
 import { AbstractIdentifiable } from './abstract_identifiable';
 
 export class Geometry extends AbstractIdentifiable{
@@ -40,7 +39,7 @@ export class Geometry extends AbstractIdentifiable{
     }
 
     copy(): Geometry {
-        return new Geometry(csg.clone(this.geometry), this.name, this._constructionString);
+        return new Geometry(this.clone(this.geometry), this._constructionString, this.name);
     }
 
     /**
@@ -76,6 +75,22 @@ export class Geometry extends AbstractIdentifiable{
             this._constructionString + ".INTERSECTION(" + geometry.constructionString + ")";
         this.geometry = this.geometry.intersect(geometry.geometry);
         return this;
+    }
+
+    /** clone the given object
+     * @param {Object} obj - the object to clone by
+     * @returns {CSG} new CSG object , a copy of the input
+     *
+     * @example
+     * let copy = clone(sphere())
+     */
+    private clone (obj) {
+        if (obj === null || typeof obj !== 'object') return obj
+        var copy = obj.constructor()
+        for (var attr in obj) {
+        if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr]
+        }
+        return copy
     }
 
 }
