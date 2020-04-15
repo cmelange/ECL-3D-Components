@@ -8,6 +8,12 @@ export class Vector2D {
         this.vector = [x,y];
     }
 
+    get x(): number { return this.vector[0]; }
+    get y(): number { return this.vector[1]; }
+
+    set x(x: number) { this.vector[0] = x; }
+    set y(y: number) { this.vector[0] = y; }
+
     equals(vector: Vector2D): boolean {
         return ((this.vector[0] === vector.vector[0]) &&
                 (this.vector[1] === vector.vector[1]));
