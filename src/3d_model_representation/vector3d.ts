@@ -15,8 +15,8 @@ export class Vector3D {
     get z(): number { return this.vector[2]; }
 
     set x(x: number) { this.vector[0] = x; }
-    set y(y: number) { this.vector[0] = y; }
-    set z(z: number) { this.vector[0] = z; }
+    set y(y: number) { this.vector[1] = y; }
+    set z(z: number) { this.vector[2] = z; }
 
     equals(vector: Vector3D): boolean {
         return ((this.vector[0] === this.vector[0]) && 

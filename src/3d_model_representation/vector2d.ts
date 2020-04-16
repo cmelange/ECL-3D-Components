@@ -12,7 +12,7 @@ export class Vector2D {
     get y(): number { return this.vector[1]; }
 
     set x(x: number) { this.vector[0] = x; }
-    set y(y: number) { this.vector[0] = y; }
+    set y(y: number) { this.vector[1] = y; }
 
     equals(vector: Vector2D): boolean {
         return ((this.vector[0] === vector.vector[0]) &&

@@ -8,7 +8,7 @@ class Vector2D {
     get x() { return this.vector[0]; }
     get y() { return this.vector[1]; }
     set x(x) { this.vector[0] = x; }
-    set y(y) { this.vector[0] = y; }
+    set y(y) { this.vector[1] = y; }
     equals(vector) {
         return ((this.vector[0] === vector.vector[0]) &&
             (this.vector[1] === vector.vector[1]));
