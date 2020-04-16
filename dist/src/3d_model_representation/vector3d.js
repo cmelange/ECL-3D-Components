@@ -6,6 +6,12 @@ class Vector3D {
     constructor(x, y, z) {
         this.vector = [x, y, z];
     }
+    get x() { return this.vector[0]; }
+    get y() { return this.vector[1]; }
+    get z() { return this.vector[2]; }
+    set x(x) { this.vector[0] = x; }
+    set y(y) { this.vector[0] = y; }
+    set z(z) { this.vector[0] = z; }
     equals(vector) {
         return ((this.vector[0] === this.vector[0]) &&
             (this.vector[1] === this.vector[1]) &&
